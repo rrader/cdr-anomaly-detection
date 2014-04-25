@@ -1,8 +1,10 @@
 package ua.kpi.rrader.cdr.source;
 
-/**
- * Created by roma on 4/25/14.
- */
+
 public interface CallGenerator {
+    CallGenerator getNearestEventGenerator();
     CDR nextRecord();
+    void setNextEventTime(int time); //not recursive
+    void initTime(int time); //recursive
+    int getNearestEventTime();
 }

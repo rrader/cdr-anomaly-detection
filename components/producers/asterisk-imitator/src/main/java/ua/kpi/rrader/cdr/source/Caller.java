@@ -22,6 +22,26 @@ public class Caller implements CallGenerator {
     }
 
     @Override
+    public void setNextEventTime(int startTime) {
+        setStartTime(startTime);
+    }
+
+    @Override
+    public void initTime(int time) {
+        setNextEventTime(time);
+    }
+
+    @Override
+    public int getNearestEventTime() {
+        return getStartTime();
+    }
+
+    @Override
+    public CallGenerator getNearestEventGenerator() {
+        return this;
+    }
+
+    @Override
     public CDR nextRecord() {
         return nextRecord(this.startTime);
     }

@@ -1,7 +1,7 @@
 package ua.kpi.rrader.cdr.source;
 
-import kafka.producer.KeyedMessage;
 import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
 import java.util.Properties;
@@ -33,18 +33,15 @@ public class AsteriskImitator {
         } else
         if (args.length > 0 && args[0].compareTo("p1") == 0) {
             Caller caller1 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
-            Caller caller2 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
-            Pattern p1 = new Pattern();
-            Pattern p2 = new Pattern();
+            Pattern p1 = Pattern.newPattern1();
             p1.add(caller1);
-            p2.add(caller2);
             PatternCollection generator = new PatternCollection();
             generator.add(p1);
-            generator.add(p2);
 
+            generator.initTime(345600);  // Mon, 05 Jan 1970 00:00:00 GMT
             while (true) {
                 emitSingle(producer, generator);
-                Thread.sleep(1000);
+                Thread.sleep(500);
             }
         }
     }
@@ -54,5 +51,6 @@ public class AsteriskImitator {
         // Source number is key; CDR is Value (in csv format)
         KeyedMessage<String, String> data = new KeyedMessage<String, String>("calls", cdr.src, cdr.toString());
         producer.send(data);
+        System.out.println("calls: " + cdr.src + " : " + cdr.toString());
     }
 }
