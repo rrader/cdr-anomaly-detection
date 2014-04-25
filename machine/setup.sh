@@ -17,12 +17,18 @@ cd kafka*
 # bin/kafka-server-start.sh config/server.properties
 
 # Create topic:
-# bin/kafka-topics.sh --zookeeper localhost:2181 --partition 1 --create --topic test --replication-factor 1
+# bin/kafka-topics.sh --zookeeper localhost:2181 --partition 1 --create --topic calls --replication-factor 1
 
 # Simple producer/consumer
 # bin/kafka-console-producer.sh --broker-list sandbox.hortonworks.com:9092 --topic test
-# bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic test --from-beginning
+# bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic calls --from-beginning
+
+# ====== Starting services ======
+cd /vagrant
+bash start.sh
 
 # ========== My code ============
+# ---------- Producer -----------
 cd /components/producers/asterisk-imitator
 mvn clean package
+java -cp 'target/*' ua.kpi.rrader.cdr.source.AsteriskImitator

@@ -16,13 +16,13 @@ public class CDR {
     public String toString() {
         int duration = end - start;
         int billsec = end - answer;
-        return src + ", " +
-                dst + ", " +
-                start + ", " +
-                answer + ", " +
-                end + ", " +
-                duration + ", " +
-                billsec + ", " +
+        return src + "," +
+                dst + "," +
+                start + "," +
+                answer + "," +
+                end + "," +
+                duration + "," +
+                billsec + "," +
                 disposition;
     }
 }

@@ -27,6 +27,18 @@ public class PhoneBook extends ArrayList<String> {
     }
 
     /**
+     * Generate random number from phone book
+     * @return random number from phone book
+     */
+    public String nextDestinationNumber(String src) {
+        String num2 = nextRandomNumber();
+        while(src.compareTo(num2) == 0) {
+            num2 = nextRandomNumber();
+        }
+        return num2;
+    }
+
+    /**
      * Generate pair of different numbers from phone book
      * @return pair of numbers
      */
