@@ -1,4 +1,4 @@
-REGISTER 'udf.py' USING jython AS myudf;
+--REGISTER 'udf.py' USING jython AS myudf;
 
 REGISTER 'piggybank.jar';
 DEFINE UnixToISO org.apache.pig.piggybank.evaluation.datetime.convert.UnixToISO();
@@ -18,9 +18,10 @@ D = FOREACH data GENERATE src, start,
 						  ((start/(60*60*24)) - (start/(60*60*24))/7*7 + 3)%7 as weekDay;
 
 times = GROUP D BY (src,hourOfDay,weekDay);
-times2 = FOREACH times GENERATE group,COUNT(D);
+times2 = FOREACH times GENERATE group,COUNT(D) as count;
 
 --DESCRIBE times2;
 by_src = GROUP times2 BY group.src;
 
-DUMP by_src;
+patterns = FOREACH by_src GENERATE group,FLATTEN(times2);
+STORE patterns INTO 'patterns' USING org.apache.pig.piggybank.storage.MultiStorage('patterns', '0', 'none', ',');
