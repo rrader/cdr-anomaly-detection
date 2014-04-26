@@ -41,3 +41,4 @@ bash start.sh
 cd /components/producers/asterisk-imitator
 mvn clean package
 #java -cp 'target/*' ua.kpi.rrader.cdr.source.AsteriskImitator p1
+cd /opt/kafka

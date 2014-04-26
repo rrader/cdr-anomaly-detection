@@ -24,29 +24,3 @@ times2 = FOREACH times GENERATE group,COUNT(D);
 by_src = GROUP times2 BY group.src;
 
 DUMP by_src;
-
-
-/*by_src = GROUP D BY src;
-
-E = FOREACH by_src {
-	times = FOREACH D GENERATE (start,hourOfDay,weekDay) as time;
-	records = BagToTuple(times);
-	GENERATE group as src, records as record;
-}
-
-DESCRIBE E;
---DUMP E;
-
-X = FOREACH E GENERATE myudf.group_phones(record);
---DESCRIBE X;
-DUMP X;
-
-*/
---GENERATE X;
-
---DUMP E;
-
---by_period = GROUP D BY (hourOfDay, weekDay);
---pattern = FOREACH by_period GENERATE group, COUNT(D);
-
---DUMP pattern;

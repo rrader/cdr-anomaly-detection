@@ -4,12 +4,16 @@ import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 public class AsteriskImitator {
     static final int PHONE_NUMBER_COUNT = 50;
+    private static PrintWriter writer = null;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, FileNotFoundException, UnsupportedEncodingException {
         Properties props = new Properties();
         props.put("metadata.broker.list", "sandbox.hortonworks.com:9092");
         props.put("serializer.class", "kafka.serializer.StringEncoder");
@@ -20,6 +24,7 @@ public class AsteriskImitator {
         Producer<String, String> producer = new Producer<String, String>(config);
 
         PhoneBook phoneBook = PhoneBook.generatePhoneBook(PHONE_NUMBER_COUNT);
+        writer = new PrintWriter("data.csv", "UTF-8");
         if (args.length > 0 && args[0].compareTo("1") == 0) {
             CallGenerator generator = new Caller(phoneBook.nextRandomNumber(), phoneBook);
             emitSingle(producer, generator);
@@ -44,13 +49,20 @@ public class AsteriskImitator {
                 Thread.sleep(100);
             }
         }
+        writer.close();
     }
+
+    private static int id = 1;
 
     private static void emitSingle(Producer<String, String> producer, CallGenerator generator) {
         CDR cdr = generator.nextRecord();
         // Source number is key; CDR is Value (in csv format)
         KeyedMessage<String, String> data = new KeyedMessage<String, String>("calls", cdr.src, cdr.toString());
         producer.send(data);
-        System.out.println("calls: " + cdr.src + " : " + cdr.toString());
+//        writer.println(id++ + "\t" + cdr.toString());
+//        if (cdr.start >= 1555200) {
+//            writer.close();
+//            System.exit(0);
+//        }
     }
 }
