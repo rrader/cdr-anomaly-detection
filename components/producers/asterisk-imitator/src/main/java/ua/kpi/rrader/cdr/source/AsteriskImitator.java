@@ -41,7 +41,7 @@ public class AsteriskImitator {
             generator.initTime(345600);  // Mon, 05 Jan 1970 00:00:00 GMT
             while (true) {
                 emitSingle(producer, generator);
-                Thread.sleep(500);
+                Thread.sleep(100);
             }
         }
     }
