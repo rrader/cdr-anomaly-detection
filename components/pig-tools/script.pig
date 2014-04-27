@@ -1,11 +1,7 @@
---REGISTER 'udf.py' USING jython AS myudf;
-
-REGISTER 'piggybank.jar';
-DEFINE UnixToISO org.apache.pig.piggybank.evaluation.datetime.convert.UnixToISO();
-DEFINE ISOToUnix org.apache.pig.piggybank.evaluation.datetime.convert.ISOToUnix();
-DEFINE ISOToHour org.apache.pig.piggybank.evaluation.datetime.truncate.ISOToHour();
+REGISTER 'python_udf.py' USING jython AS myfuncs;
 
 line = LOAD 'data.csv' USING PigStorage('\t') AS (id:chararray,data:chararray);
+--line = LOAD '/tmp/cdr/part-1398500976237_0010-m-00000' USING PigStorage('\t') AS (id:chararray,data:chararray);
 data_s = FOREACH line GENERATE FLATTEN(STRSPLIT(data, ','));
 
 data = FOREACH data_s GENERATE $0 as src, $1 as dst, (int)$2 as start, (int)$3 as answer,(int)$4 as end,
@@ -18,10 +14,18 @@ D = FOREACH data GENERATE src, start,
 						  ((start/(60*60*24)) - (start/(60*60*24))/7*7 + 3)%7 as weekDay;
 
 times = GROUP D BY (src,hourOfDay,weekDay);
-times2 = FOREACH times GENERATE group,COUNT(D) as count;
+times2 = FOREACH times GENERATE group.src, (group.weekDay+1)*(group.hourOfDay+1) as id,COUNT(D) as count;
 
---DESCRIBE times2;
-by_src = GROUP times2 BY group.src;
+DESCRIBE times2;
 
-patterns = FOREACH by_src GENERATE group,FLATTEN(times2);
-STORE patterns INTO 'patterns' USING org.apache.pig.piggybank.storage.MultiStorage('patterns', '0', 'none', ',');
+by_src = GROUP times2 BY src;
+
+patterns = FOREACH by_src {
+	times_ordered = ORDER times2 BY id;
+	GENERATE myfuncs.generate_pattern(group, times_ordered);
+}
+
+DESCRIBE patterns;
+
+--STORE patterns INTO '/tmp/patterns';
+STORE patterns INTO 'patterns';
