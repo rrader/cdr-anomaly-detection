@@ -28,4 +28,5 @@ patterns = FOREACH by_src {
 DESCRIBE patterns;
 
 --STORE patterns INTO '/tmp/patterns';
-STORE patterns INTO 'patterns';
+--STORE patterns INTO 'patterns';
+DUMP patterns;
