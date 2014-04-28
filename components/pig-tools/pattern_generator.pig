@@ -31,7 +31,6 @@ times = GROUP D BY (src,hourOfDay,weekDay);
 times2 = FOREACH times {
 	GENERATE group.src as src,
 			 (group.weekDay*24+group.hourOfDay) AS id,
---				(COUNT(w1)*8 + COUNT(w2)*4 + COUNT(w3)*2 + COUNT(w4)*1)/(double)(1+2+4+8) as count,
 			 myfuncs.EMA(D, 4, 4, 0.5) as ema;
 }
 
