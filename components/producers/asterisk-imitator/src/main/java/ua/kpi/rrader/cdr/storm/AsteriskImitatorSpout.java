@@ -3,33 +3,29 @@ package ua.kpi.rrader.cdr.storm;
 import backtype.storm.Config;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
-import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
-import backtype.storm.tuple.Values;
-import ua.kpi.rrader.cdr.kafka.AsteriskImitator;
+import ua.kpi.rrader.cdr.producers.AsteriskImitatorKafkaProducer;
 import ua.kpi.rrader.cdr.source.*;
 
 import java.util.Map;
 
-//https://github.com/davidkiss/storm-twitter-word-count/blob/master/src/main/java/com/kaviddiss/storm/TwitterSampleSpout.java
-
-public class AsteriskImitatorSpout implements IRichSpout {
-    @Override
-    public Map<String, Object> getComponentConfiguration() {
-        Config ret = new Config();
-        ret.setMaxTaskParallelism(1);
-        return ret;
-    }
-
+public class AsteriskImitatorSpout extends BaseRichSpout {
     private PatternCollection generator;
     private SpoutOutputCollector collector;
+
+    @Override
+    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
+        outputFieldsDeclarer.declare(new Fields("src", "dst", "start", "answer", "end",
+                "duration", "billsec", "disposition"));
+    }
 
     @Override
     public void open(Map map, TopologyContext topologyContext, SpoutOutputCollector spoutOutputCollector) {
         collector = spoutOutputCollector;
 
-        PhoneBook phoneBook = PhoneBook.generatePhoneBook(AsteriskImitator.PHONE_NUMBER_COUNT);
+        PhoneBook phoneBook = PhoneBook.generatePhoneBook(AsteriskImitatorKafkaProducer.PHONE_NUMBER_COUNT);
         Caller caller1 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
         Pattern p1 = Pattern.newPattern1();
         p1.add(caller1);
@@ -46,32 +42,9 @@ public class AsteriskImitatorSpout implements IRichSpout {
     }
 
     @Override
-    public void close() {
-
-    }
-
-    @Override
-    public void activate() {
-
-    }
-
-    @Override
-    public void deactivate() {
-
-    }
-
-    @Override
-    public void ack(Object o) {
-
-    }
-
-    @Override
-    public void fail(Object o) {
-
-    }
-
-    @Override
-    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
-        outputFieldsDeclarer.declare(new Fields("cdr"));
+    public Map<String, Object> getComponentConfiguration() {
+        Config ret = new Config();
+        ret.setMaxTaskParallelism(1);
+        return ret;
     }
 }
