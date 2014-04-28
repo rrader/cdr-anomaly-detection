@@ -60,20 +60,21 @@ public class AsteriskImitator {
     private static void emitSingle(Producer<String, String> producer, CallGenerator generator) {
         CDR cdr = generator.nextRecord();
 //        Source number is key; CDR is Value (in csv format)
-        KeyedMessage<String, String> data = new KeyedMessage<String, String>("calls", cdr.src, cdr.toString());
-        producer.send(data);
-//        writer.println(id++ + "\t" + cdr.toString());
-//        int h = (cdr.start-(cdr.start/(60*60*24))*(60*60*24))/60/60;
-//        int w = ((cdr.start/(60*60*24)) - (cdr.start/(60*60*24))/7*7 + 3)%7;
-//        System.out.println(new Date(cdr.start*1000).toString() + "  :  " + h + ":"+w);
-//        int id = w*24 + h;
-//        hours[id] += 1;
-//        if (cdr.start >= 950400) { //1555200
-//            writer.close();
-//            for (int i=0; i<hours.length; i++) {
-//                System.out.println(i + ": " + hours[i]);
-//            }
-//            System.exit(0);
-//        }
+//        KeyedMessage<String, String> data = new KeyedMessage<String, String>("calls", cdr.src, cdr.toString());
+//        producer.send(data);
+
+        writer.println(id++ + "\t" + cdr.toString());
+        int h = (cdr.start-(cdr.start/(60*60*24))*(60*60*24))/60/60;
+        int w = ((cdr.start/(60*60*24)) - (cdr.start/(60*60*24))/7*7 + 3)%7;
+        System.out.println(new Date(cdr.start*1000).toString() + "  :  " + h + ":"+w);
+        int id = w*24 + h;
+        hours[id] += 1;
+        if (cdr.start >= 2764800) {  // Mon, 02 Feb 1970 00:00:00 GMT
+            writer.close();
+            for (int i=0; i<hours.length; i++) {
+                System.out.println(i + ": " + hours[i]);
+            }
+            System.exit(0);
+        }
     }
 }

@@ -49,5 +49,5 @@ DESCRIBE patterns;
 
 -- 7. Patterns have been calculated!
 --STORE patterns INTO '/tmp/patterns';
---STORE patterns INTO 'patterns';
-DUMP patterns;
+STORE patterns INTO 'patterns';
+--DUMP patterns;
