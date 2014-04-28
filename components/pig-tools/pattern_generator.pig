@@ -14,7 +14,7 @@ D = FOREACH data GENERATE src, start,
 						  ((start/(60*60*24)) - (start/(60*60*24))/7*7 + 3)%7 as weekDay;
 
 times = GROUP D BY (src,hourOfDay,weekDay);
-times2 = FOREACH times GENERATE group.src, (group.weekDay+1)*(group.hourOfDay+1) as id,COUNT(D) as count;
+times2 = FOREACH times GENERATE group.src, (group.weekDay*24+group.hourOfDay) as id,COUNT(D) as count;
 
 DESCRIBE times2;
 
@@ -28,5 +28,5 @@ patterns = FOREACH by_src {
 DESCRIBE patterns;
 
 --STORE patterns INTO '/tmp/patterns';
---STORE patterns INTO 'patterns';
-DUMP patterns;
+STORE patterns INTO 'patterns';
+--DUMP patterns;
