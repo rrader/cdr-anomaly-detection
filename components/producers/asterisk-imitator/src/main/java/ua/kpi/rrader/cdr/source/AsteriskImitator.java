@@ -7,6 +7,8 @@ import kafka.producer.ProducerConfig;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Properties;
 
 public class AsteriskImitator {
@@ -46,22 +48,31 @@ public class AsteriskImitator {
             generator.initTime(345600);  // Mon, 05 Jan 1970 00:00:00 GMT
             while (true) {
                 emitSingle(producer, generator);
-                Thread.sleep(100);
+                //Thread.sleep(100);
             }
         }
         writer.close();
     }
 
     private static int id = 1;
+    private static int[] hours = new int[7*24];
 
     private static void emitSingle(Producer<String, String> producer, CallGenerator generator) {
         CDR cdr = generator.nextRecord();
-        // Source number is key; CDR is Value (in csv format)
+//        Source number is key; CDR is Value (in csv format)
         KeyedMessage<String, String> data = new KeyedMessage<String, String>("calls", cdr.src, cdr.toString());
         producer.send(data);
 //        writer.println(id++ + "\t" + cdr.toString());
-//        if (cdr.start >= 1555200) {
+//        int h = (cdr.start-(cdr.start/(60*60*24))*(60*60*24))/60/60;
+//        int w = ((cdr.start/(60*60*24)) - (cdr.start/(60*60*24))/7*7 + 3)%7;
+//        System.out.println(new Date(cdr.start*1000).toString() + "  :  " + h + ":"+w);
+//        int id = w*24 + h;
+//        hours[id] += 1;
+//        if (cdr.start >= 950400) { //1555200
 //            writer.close();
+//            for (int i=0; i<hours.length; i++) {
+//                System.out.println(i + ": " + hours[i]);
+//            }
 //            System.exit(0);
 //        }
     }

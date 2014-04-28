@@ -50,8 +50,8 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
         }
 
         double delta = -(Math.log(random.nextDouble()) / intensity.getKey());
-        System.out.println("[pattern] delta: " + delta);
-        System.out.println(new Date((long) ((callGenerator.getNearestEventTime() + delta)*1000)));
+//        System.out.println("[pattern] delta: " + delta);
+//        System.out.println(new Date((long) ((callGenerator.getNearestEventTime() + delta)*1000)));
         int nextTime = (int) (callGenerator.getNearestEventTime() + delta);
         callGenerator.setNextEventTime(nextTime);
         return nextTime;
