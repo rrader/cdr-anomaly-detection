@@ -6,6 +6,7 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import ua.kpi.rrader.cdr.source.CDR;
+import ua.kpi.rrader.cdr.storm.detector.UserPattern;
 
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class ProcessBolt extends BaseRichBolt {
         CDR cdr = fromTuple(tuple);
         UserPattern pattern = UserPattern.patternFor(cdr.src);
 
-        if (pattern != null) { // TODO: is converged? weeks;dispersion
+        if (pattern != null) { // TODO: is converged? 4 weeks;dispersion
             if (!pattern.isConform(cdr))  {
                 //TODO: alarm
             }

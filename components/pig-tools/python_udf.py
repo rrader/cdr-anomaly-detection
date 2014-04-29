@@ -1,9 +1,9 @@
 
 @outputSchema("pattern:chararray")
-def generate_pattern(group, times):
+def generate_pattern(group, times, sigma):
 	timesd = dict((x[1], x[2]) for x in times)
 	ids = [str(timesd[i] if i in timesd else 0) for i in range(1, 7*24+1)]
-	ids = [str(group)] + ids
+	ids = [str(group)] + ids + [str(sigma)]
 	csv = ','.join(ids)
 	return csv
 
@@ -25,6 +25,11 @@ def EMA(D, weight_field, wmax, alpha):
 	for weight in weights:
 		numer += sum(1 for x in D if x[weight_field] == weight)*weights_values[weight]
 	return numer/denom
+
+
+@outputSchema("value:double")
+def SQR(x):
+	return x*x
 
 
 @outputSchema("value:double")

@@ -1,4 +1,4 @@
-package ua.kpi.rrader.cdr.storm;
+package ua.kpi.rrader.cdr.storm.detector;
 
 import au.com.bytecode.opencsv.CSVReader;
 import ua.kpi.rrader.cdr.source.CDR;
@@ -10,24 +10,35 @@ import java.util.*;
 
 public class UserPattern {
     private static final String PATH = "../../pig-tools/patterns/part-r-00000";
-    private static Map<String,double[]> patterns = null;
-    private double[] doubles;
+    private static Map<String, UserPattern> patterns = null;
+    private double[] intensities;
+    private String src;
+    private double sigma;
 
-    public UserPattern(double[] pattern) {
-        this.doubles = pattern;
+    public UserPattern(String src, double[] pattern, double sigma) {
+        this.intensities = pattern;
+        this.sigma = sigma;
     }
 
-    public double[] getDoubles() {
-        return doubles;
+    public double[] getIntensities() {
+        return intensities;
     }
 
-    public void setDoubles(double[] doubles) {
-        this.doubles = doubles;
+    public void setIntensities(double[] intensities) {
+        this.intensities = intensities;
     }
 
-    public static HashMap<String, double[]> readPatterns() {
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
+    public static HashMap<String, UserPattern> readPatterns() {
         CSVReader reader = null;
-        HashMap<String, double[]> patterns = null;
+        HashMap<String, UserPattern> patterns = null;
         try {
             reader = new CSVReader(new FileReader(PATH));
         } catch (FileNotFoundException e) {
@@ -35,14 +46,16 @@ public class UserPattern {
             return null;
         }
         String [] nextLine;
-        patterns = new HashMap<String, double[]>();
+        patterns = new HashMap<String, UserPattern>();
         try {
             double[] p = new double[7*24];
             while ((nextLine = reader.readNext()) != null) {
                 for (int i=1; i<=7*24; i++) {
-                    p[i] = Double.parseDouble(nextLine[i]);
+                    p[i-1] = Double.parseDouble(nextLine[i]);
                 }
-                patterns.put(nextLine[0], p);
+                UserPattern pattern = new UserPattern(nextLine[0], p,
+                        Double.parseDouble(nextLine[7*24+1]));
+                patterns.put(nextLine[0], pattern);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -61,7 +74,7 @@ public class UserPattern {
             patterns = readPatterns();
         }
         if (patterns.containsKey(src))
-            return new UserPattern(patterns.get(src));
+            return patterns.get(src);
         else
             return null;
     }

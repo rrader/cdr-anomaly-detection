@@ -34,41 +34,39 @@ times2 = FOREACH times {
 			 myfuncs.EMA(D, 4, 4, 0.5) as ema;
 }
 
--- 5.1. last week records
+-- 6. last week records
 data_1week = FILTER D BY weekNumber == 1;
 times_1week = GROUP data_1week BY (src,hourOfDay,weekDay);
+
 times_1week2 = FOREACH times_1week {
 	GENERATE group.src as src,
 			 (group.weekDay*24+group.hourOfDay) AS id,
 			 COUNT(data_1week) as count;
 }
 
--- 5.2 Calculate dispersion
+-- 7. Calculate dispersion
 comb = JOIN times2 BY (src, id) FULL OUTER, times_1week2 BY (src, id);
+
 diffs = FOREACH comb {
-	GENERATE times2.src as src,
-		myfuncs.SQR( ((times_1week2.count is null) ? 0 : times_1week2.count) -
-					 ((times2.ema is null) ? 0 : times2.ema) ) as diff;
+		GENERATE times2::src,
+			myfuncs.SQR( ((times_1week2::count is null) ? 0 : times_1week2::count) -
+						 ((times2::ema is null) ? 0 : times2::ema) ) as diff;
 }
+
 diffs_gr = GROUP diffs BY src;
-dispersions = FOREACH diffs_gr {
-	GENERATE group as src, SUM(diffs.diff)/(COUNT(diffs)) as dispersion;
+sigma = FOREACH diffs_gr {
+	GENERATE group as src, SQRT(SUM(diffs.diff)/(COUNT(diffs))) as sigma;
 }
-DUMP dispersions;
-/*
--- 6. Generate pattern vector, based on id:ema pairs
-DESCRIBE times2;
-by_src = GROUP times2 BY src; --, dispersions BY src;
+
+-- 8. Generate pattern vector, based on id:ema pairs
+by_src = GROUP times2 BY src, sigma BY src;
 
 patterns = FOREACH by_src {
 	times_ordered = ORDER times2 BY id;
-	GENERATE myfuncs.generate_pattern(group, times_ordered);--, dispersions;
+	GENERATE myfuncs.generate_pattern(group, times_ordered, BagToTuple(sigma.sigma).$0);
 }
 
-DESCRIBE patterns;
-
--- 7. Patterns have been calculated!
+-- 9. Patterns have been calculated!
 --STORE patterns INTO '/tmp/patterns';
---STORE patterns INTO 'patterns';
-DUMP patterns;
-*/
+STORE patterns INTO 'patterns';
+--DUMP patterns;
