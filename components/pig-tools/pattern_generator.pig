@@ -33,7 +33,26 @@ times2 = FOREACH times {
 			 (group.weekDay*24+group.hourOfDay) AS id,
 			 myfuncs.EMA(D, 4, 4, 0.5) as ema;
 }
+/*
+-- 5.1. last week records
+data_1week = FILTER D BY weekNumber == 1;
+times_1week = GROUP data_1week BY (src,hourOfDay,weekDay);
+times_1week2 = FOREACH times_1week {
+	GENERATE group.src as src,
+			 (group.weekDay*24+group.hourOfDay) AS id,
+			 COUNT(data_1week) as count;
+}
 
+-- 5.2 Calculate dispersion
+comb = COGROUP times2 BY (src, id),  times_1week2 BY (src, id);
+diffs = FOREACH comb {
+	GENERATE group.src as src, myfuncs.SQR(times_1week2.count - times2.ema) as diff;
+}
+diffs_gr = GROUP diffs BY src;
+dispersions = FOREACH diffs_gr {
+	GENERATE group, SUM(diffs)/(7*24)
+}
+*/
 DESCRIBE times2;
 
 by_src = GROUP times2 BY src;
@@ -48,5 +67,5 @@ DESCRIBE patterns;
 
 -- 7. Patterns have been calculated!
 --STORE patterns INTO '/tmp/patterns';
-STORE patterns INTO 'patterns';
---DUMP patterns;
+--STORE patterns INTO 'patterns';
+DUMP patterns;

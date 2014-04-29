@@ -7,6 +7,7 @@ def generate_pattern(group, times):
 	csv = ','.join(ids)
 	return csv
 
+
 @outputSchema("value:double")
 def EMA(D, weight_field, wmax, alpha):
 	"""
@@ -24,3 +25,8 @@ def EMA(D, weight_field, wmax, alpha):
 	for weight in weights:
 		numer += sum(1 for x in D if x[weight_field] == weight)*weights_values[weight]
 	return numer/denom
+
+
+@outputSchema("value:double")
+def SQR(x):
+	return x*x
