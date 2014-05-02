@@ -1,6 +1,10 @@
 -- Program that calculates per-number patterns of usage
 
 REGISTER 'python_udf.py' USING jython AS myfuncs;
+REGISTER 'pig-to-json.jar';
+REGISTER 'pig-redis.jar';
+REGISTER 'piggybank.jar';
+REGISTER 'json-simple-1.1.jar';
 
 -- 1. load and parse data
 line = LOAD 'data.csv' USING PigStorage('\t') AS (id:chararray,data:chararray);
@@ -65,6 +69,13 @@ patterns = FOREACH by_src {
 	times_ordered = ORDER times2 BY id;
 	GENERATE myfuncs.generate_pattern(group, times_ordered, BagToTuple(sigma.sigma).$0);
 }
+
+to_redis = FOREACH by_src {
+	times_ordered = ORDER times2 BY id;
+	GENERATE group, myfuncs.generate_pattern(group, times_ordered, BagToTuple(sigma.sigma).$0);
+}
+
+STORE to_redis INTO 'redis' USING com.hackdiary.pig.RedisStorer('kv', 'localhost');
 
 -- 9. Patterns have been calculated!
 --STORE patterns INTO '/tmp/patterns';

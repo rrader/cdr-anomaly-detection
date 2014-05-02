@@ -14,6 +14,11 @@ import java.util.Map;
 public class AsteriskImitatorSpout extends BaseRichSpout {
     private PatternCollection generator;
     private SpoutOutputCollector collector;
+    private String phoneNumber;
+
+    public AsteriskImitatorSpout(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
@@ -26,7 +31,7 @@ public class AsteriskImitatorSpout extends BaseRichSpout {
         collector = spoutOutputCollector;
 
         PhoneBook phoneBook = PhoneBook.generatePhoneBook(AsteriskImitatorKafkaProducer.PHONE_NUMBER_COUNT);
-        Caller caller1 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
+        Caller caller1 = new Caller(phoneNumber, phoneBook);
         Pattern p1 = Pattern.newPattern1();
         p1.add(caller1);
         generator = new PatternCollection();

@@ -10,10 +10,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: javax.mail:mail:1.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
-    <orderEntry type="library" name="Maven: junit:junit:4.8.1" level="project" />
-    <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:kafka_2.9.2:0.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: com.yammer.metrics:metrics-annotation:2.2.0" level="project" />
@@ -72,6 +68,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.disruptor:disruptor:2.10.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: storm:jgrapht:0.8.3" level="project" />
     <orderEntry type="library" name="Maven: net.sf.opencsv:opencsv:2.0" level="project" />
+    <orderEntry type="library" name="Maven: redis.clients:jedis:2.4.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.0" level="project" />
   </component>
 </module>
 

@@ -25,6 +25,9 @@ echo 'export HADOOP_CLASSPATH=${HADOOP_CLASSPATH}:'`pwd`/libs/'*' >> /etc/hadoop
 # bin/kafka-console-producer.sh --broker-list sandbox.hortonworks.com:9092 --topic test
 # bin/kafka-console-consumer.sh --zookeeper localhost:2181 --topic calls --from-beginning
 
+# ======== Redis =========
+# set up redis
+
 # ======== HDFS Writer ==========
 cd /components/k8hadoop/k8hadoop
 mvn package

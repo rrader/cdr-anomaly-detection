@@ -11,7 +11,7 @@ public class TopologyTest {
     @org.junit.Test
     public void testTopology() throws Exception {
         TopologyBuilder builder = new TopologyBuilder();
-        builder.setSpout("cdr", new AsteriskImitatorSpout(), 1);
+        builder.setSpout("cdr", new AsteriskImitatorSpout("+380006370855"), 1);
         builder.setBolt("print", new ProcessBolt(), 1).fieldsGrouping("cdr", new Fields("src"));
 
         Config conf = new Config();

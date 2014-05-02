@@ -8,10 +8,15 @@ import backtype.storm.tuple.Tuple;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.storm.detector.UserPattern;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ProcessBolt extends BaseRichBolt {
     private OutputCollector collector;
+    /**
+     * Last processed time
+     */
+    private Map<String, Integer> lastTimes = new HashMap<String, Integer>();
 
     @Override
     public void prepare(Map map, TopologyContext topologyContext, OutputCollector outputCollector) {
@@ -24,10 +29,11 @@ public class ProcessBolt extends BaseRichBolt {
         CDR cdr = fromTuple(tuple);
         UserPattern pattern = UserPattern.patternFor(cdr.src);
 
-        if (pattern != null) { // TODO: is converged? 4 weeks;dispersion
+        if (pattern != null && pattern.isConverged()) { // is converged? 4 weeks;dispersion
             if (!pattern.isConform(cdr))  {
                 //TODO: alarm
             }
+            pattern.maintain(cdr);
         }
     }
 
