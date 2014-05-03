@@ -8,7 +8,7 @@ public class ExponentialMovingAverage {
     public ExponentialMovingAverage(double alpha) {
         this.alpha = alpha;
     }
-//хранить 10 последних, время 1 - 10 / 10 = интенсивность
+
     public void newValue(double value) {
         if (oldValue == null) {
             oldValue = value;

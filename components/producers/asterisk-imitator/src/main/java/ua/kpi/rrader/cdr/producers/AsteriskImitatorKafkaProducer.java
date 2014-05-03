@@ -34,4 +34,13 @@ public class AsteriskImitatorKafkaProducer extends BaseProducer {
         KeyedMessage<String, String> data = new KeyedMessage<String, String>("calls", cdr.src, cdr.toString());
         producer.send(data);
     }
+
+    protected PatternCollection makePatternCollection(PhoneBook phoneBook) {
+        Caller caller1 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
+        Pattern p1 = Pattern.newPattern1();
+        p1.add(caller1);
+        PatternCollection generator = new PatternCollection();
+        generator.add(p1);
+        return generator;
+    }
 }

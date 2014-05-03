@@ -24,13 +24,13 @@ public class UserPattern {
 
     private double[] intensities;
     private String src;
-    private double sigma;
+    private double[] sigmas;
 
     private ExponentialMovingAverage currentAvgPeriod = new ExponentialMovingAverage(0.2);  // 1 - alpha
 
-    public UserPattern(String src, double[] pattern, double sigma) {
+    public UserPattern(String src, double[] pattern, double[] sigmas) {
         this.intensities = pattern;
-        this.sigma = sigma;
+        this.sigmas = sigmas;
         monitoring = new Monitoring(src);
     }
 
@@ -62,13 +62,16 @@ public class UserPattern {
         String [] nextLine;
         patterns = new HashMap<String, UserPattern>();
         try {
-            double[] p = new double[7*24];
             while ((nextLine = reader.readNext()) != null) {
+                double[] p = new double[7*24];
+                double[] s = new double[7*24];
                 for (int i=1; i<=7*24; i++) {
                     p[i-1] = Double.parseDouble(nextLine[i]);
                 }
-                UserPattern pattern = new UserPattern(nextLine[0], p,
-                        Double.parseDouble(nextLine[7*24+1]));
+                for (int i=7*24+1, j=0; i<=7*24*2; i++, j++) {
+                    s[j] = Double.parseDouble(nextLine[i]);
+                }
+                UserPattern pattern = new UserPattern(nextLine[0], p, s);
                 patterns.put(nextLine[0], pattern);
             }
         } catch (IOException e) {
@@ -95,6 +98,7 @@ public class UserPattern {
 
     public boolean isConform(CDR cdr) {
         double patternFreq = patternFrequency(cdr.start);
+        double sigma = patternSigma(cdr.start);
         double currentFreq = (60*60) / currentAvgPeriod.withNewFullValue(cdr.start);
 
         return abs(patternFreq - currentFreq) <= 1.96*sigma; //95%
@@ -115,7 +119,19 @@ public class UserPattern {
         return intensities[dayOfWeek*24 + dayHour];
     }
 
+    private double patternSigma(int start) {
+        Date date = new Date(start*1000);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+        int dayHour = cal.get(Calendar.HOUR_OF_DAY);
+        int dayOfWeek = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7;  //Monday is 0
+        return sigmas[dayOfWeek*24 + dayHour];
+    }
+
     public boolean isConverged() {
-        return sigma < 5;  // for example
+        double s = 0;
+        for (double sigma : sigmas) s += sigma;
+        return (s/sigmas.length) < 5;  // for example
     }
 }

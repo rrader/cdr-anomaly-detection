@@ -52,14 +52,14 @@ times_1week2 = FOREACH times_1week {
 comb = JOIN times2 BY (src, id) FULL OUTER, times_1week2 BY (src, id);
 
 diffs = FOREACH comb {
-		GENERATE times2::src,
+		GENERATE times2::src, times2::id,
 			myfuncs.SQR( ((times_1week2::count is null) ? 0 : times_1week2::count) -
 						 ((times2::ema is null) ? 0 : times2::ema) ) as diff;
 }
 
-diffs_gr = GROUP diffs BY src;
+diffs_gr = GROUP diffs BY (src,id);
 sigma = FOREACH diffs_gr {
-	GENERATE group as src, SQRT(SUM(diffs.diff)/(COUNT(diffs))) as sigma;
+	GENERATE group.src as src, group.id as id, SQRT(SUM(diffs.diff)/(COUNT(diffs))) as sigma;
 }
 
 -- 8. Generate pattern vector, based on id:ema pairs
@@ -67,14 +67,14 @@ by_src = GROUP times2 BY src, sigma BY src;
 
 patterns = FOREACH by_src {
 	times_ordered = ORDER times2 BY id;
-	GENERATE myfuncs.generate_pattern(group, times_ordered, BagToTuple(sigma.sigma).$0);
+	GENERATE myfuncs.generate_pattern(group, times_ordered, sigma);
 }
 
 to_redis = FOREACH by_src {
 	times_ordered = ORDER times2 BY id;
-	GENERATE group, myfuncs.generate_pattern(group, times_ordered, BagToTuple(sigma.sigma).$0);
+	GENERATE group, myfuncs.generate_pattern(group, times_ordered, sigma);
 }
-
+--DUMP to_redis;
 STORE to_redis INTO 'redis' USING com.hackdiary.pig.RedisStorer('kv', 'localhost');
 
 -- 9. Patterns have been calculated!

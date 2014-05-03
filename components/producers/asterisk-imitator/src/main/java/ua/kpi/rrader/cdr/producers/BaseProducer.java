@@ -23,11 +23,7 @@ public abstract class BaseProducer {
             }
         } else
         if (args.length > 0 && args[0].compareTo("p1") == 0) {
-            Caller caller1 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
-            Pattern p1 = Pattern.newPattern1();
-            p1.add(caller1);
-            PatternCollection generator = new PatternCollection();
-            generator.add(p1);
+            PatternCollection generator = makePatternCollection(phoneBook);
 
             generator.initTime(345600);  // Mon, 05 Jan 1970 00:00:00 GMT
             while (true) {
@@ -36,4 +32,6 @@ public abstract class BaseProducer {
             }
         }
     }
+
+    protected abstract PatternCollection makePatternCollection(PhoneBook phoneBook);
 }

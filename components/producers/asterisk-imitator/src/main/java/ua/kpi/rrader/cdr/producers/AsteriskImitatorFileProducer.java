@@ -2,23 +2,31 @@ package ua.kpi.rrader.cdr.producers;
 
 
 import kafka.javaapi.producer.Producer;
-import ua.kpi.rrader.cdr.source.CDR;
-import ua.kpi.rrader.cdr.source.CallGenerator;
+import ua.kpi.rrader.cdr.source.*;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-public class AsteriskImitatorFileProducer extends BaseProducer {
+public abstract class AsteriskImitatorFileProducer extends BaseProducer {
     private static PrintWriter writer = null;
 
-    public static void main(String[] args) throws InterruptedException, FileNotFoundException, UnsupportedEncodingException {
-        AsteriskImitatorFileProducer producer = new AsteriskImitatorFileProducer();
-        writer = new PrintWriter("data.csv", "UTF-8");
-        producer.run(args);
+    public void doProduce() {
+        try {
+            writer = new PrintWriter("data.csv", "UTF-8");
+            run(new String[]{"p1"});
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         writer.close();
     }
+
+    protected abstract PatternCollection makePatternCollection(PhoneBook phoneBook);
 
     private static int id = 1;
     private static int[] hours = new int[7*24];
