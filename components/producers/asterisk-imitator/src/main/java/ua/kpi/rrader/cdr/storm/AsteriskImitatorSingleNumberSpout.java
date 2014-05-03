@@ -11,12 +11,12 @@ import ua.kpi.rrader.cdr.source.*;
 
 import java.util.Map;
 
-public class AsteriskImitatorSpout extends BaseRichSpout {
+public class AsteriskImitatorSingleNumberSpout extends BaseRichSpout {
     private PatternCollection generator;
     private SpoutOutputCollector collector;
     private String phoneNumber;
 
-    public AsteriskImitatorSpout(String phoneNumber) {
+    public AsteriskImitatorSingleNumberSpout(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

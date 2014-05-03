@@ -82,66 +82,110 @@
 
 </div>
 
+{% for phone,hist in hist.iteritems %}
+<h2>{{phone}}</h2>
+<div id="container{{phone}}" style="height: 400px"></div>
 
+<script type="text/javascript">
+        $(function () {
 
-    <div id="demo"></div>
-    <script type="text/javascript">
-        var context = cubism.context()
-                            .step(6e4) // Distance between data points in milliseconds
-                            .size(400) // Number of data points
-                            .stop(); // Fetching from a static data source; don't update values
+            var limits = {{hist.appropriate | safe}},
+                fetched = {{hist.data | safe}},
 
-        d3.select("body").append("div") // Add a vertical rule
-          .attr("class", "rule") // to the graph
-          .call(context.rule());
+                pattern = {{hist.pattern | safe}};
 
-        function stock(name) {
-            return context.metric(function(start, stop, step, callback) {
-                d3.json("patterns/" + name + ".json", function(rows) {
-                    var compare = rows[0][1], value = rows[0][1], values = [value];
-                    
-                    // Creates an array of the price differences throughout the day
-                    rows.forEach(function(d) {
-                        values.push(value = (d[1] - compare) / compare);
-                    });
-                callback(null, values); });
-            }, name);
-        }
+            $('#container{{phone}}').highcharts({
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    title: {
+                        text: null
+                    },
+                    type: 'linear',
+                    labels: {
+                        enabled: false
+                    },
+                    lineWidth: 0,
+                    tickWidth: 0
+                },
 
+                yAxis: {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        enabled: false
+                    },
+                    gridLineWidth: 0
+                },
 
-        function draw_graph(stocks_list) {
-            d3.select("#demo") // Select the div on which we want to act
-              .selectAll(".axis") // This is a standard D3 mechanism to
-              .data(["top"]) // bind data to a graph. In this case
-              .enter() // we're binding the axes "top" and "bottom".
-              .append("div") // Create two divs and
-              .attr("class", function(d) { // give them the classes
-                return d + " axis"; // top axis and bottom axis
-              }) // respectively
-              .each(function(d) { // For each of these axes,
-                d3.select(this) // draw the axes with 4 intervals
-                  .call(context.axis() // and place them in their proper places
-                  .ticks(4).orient(d));
-              });
+                tooltip: {
+                    crosshairs: true,
+                    shared: true,
+                    valueSuffix: ' calls per hour'
+                },
 
+                legend: {
+                    enabled: true
+                },
 
-            d3.select("#demo")
-              .selectAll(".horizon")
-              .data(stocks_list.map(stock))
-              .enter()
-              .insert("div", ".bottom") // Insert the graph in a div
-              .attr("class", "horizon") // Turn the div into
-              .call(context.horizon() // a horizon graph
-              .format(d3.format("+,.2p"))); // Format the values to 2 floating-point decimals
+                series: [{
+                    id: 'valueLine',
+                    name: 'Fetched',
+                    type: 'spline',
+                    data: fetched,
+                    zIndex: 1,
+                    color: 'black',
+                    shadow: true,
+                    lineWidth: 0.5,
+                    marker: {
+                        fillColor: 'black',
+                        lineWidth: 1,
+                        radius: 2,
+                        lineColor: "white",
+                        enabled: true,
+                        symbol: 'circle'
+                    }
+                }, {
+                    id: 'targetLine',
+                    name: 'Pattern',
+                    type: 'spline',
+                    data: pattern,
+//                    linkedTo: 'valueLine',
+                    zIndex: 1,
+                    color: 'gray',
+                    lineWidth: 2,
+                    dashStyle: 'DashDot',
+                    marker: {
+                        fillColor: 'gray',
+                        lineWidth: 1,
+                        radius: 2,
+                        lineColor: "white",
+                        enabled: false,
+                        symbol: 'circle'
+                    }
+                }
+                , {
+                    id: 'limitsArea',
+                    name: 'Limits',
+                    data: limits,
+                    type: 'areasplinerange',
+                    lineWidth: 1,
+                    lineColor: 'gray',
+                    // linkedTo: 'valueLine',
+                    color: "lightGray",
+                    fillOpacity: 0.3,
+                    zIndex: 0
+                }
+                ]
 
-
-            context.on("focus", function(i) {
-                d3.selectAll(".value").style("right", // Make the rule coincide
-                    i == null ? null : context.size() - i + "px"); // with the mouse
             });
-        }
 
-        draw_graph(["XX"]);
-    </script>
+        });
+
+</script>
+{% endfor %}
+
 
 {% endblock %}

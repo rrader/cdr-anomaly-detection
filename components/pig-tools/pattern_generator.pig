@@ -35,7 +35,7 @@ times = GROUP D BY (src,hourOfDay,weekDay);
 times2 = FOREACH times {
 	GENERATE group.src as src,
 			 (group.weekDay*24+group.hourOfDay) AS id,
-			 myfuncs.EMA(D, 4, 4, 0.5) as ema;
+			 myfuncs.EMA(D, 4, 4, 0.8) as ema;
 }
 
 -- 6. last week records

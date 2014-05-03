@@ -3,6 +3,7 @@ package ua.kpi.rrader.cdr.storm.detector;
 import au.com.bytecode.opencsv.CSVReader;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.storm.util.ExponentialMovingAverage;
+import ua.kpi.rrader.cdr.storm.util.Monitoring;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,19 +12,26 @@ import java.util.*;
 
 import static java.lang.Math.abs;
 
+/**
+ * User pattern
+ * Architecture makes sure that UserPattern is one for each number
+ * over all cluster
+ */
 public class UserPattern {
     private static final String PATH = "../../pig-tools/patterns/part-r-00000";
     private static Map<String, UserPattern> patterns = null;
+    private final Monitoring monitoring;
 
     private double[] intensities;
     private String src;
     private double sigma;
 
-    private ExponentialMovingAverage currentAvgPeriod = new ExponentialMovingAverage(0.8);
+    private ExponentialMovingAverage currentAvgPeriod = new ExponentialMovingAverage(0.2);  // 1 - alpha
 
     public UserPattern(String src, double[] pattern, double sigma) {
         this.intensities = pattern;
         this.sigma = sigma;
+        monitoring = new Monitoring(src);
     }
 
     public double[] getIntensities() {
@@ -94,6 +102,7 @@ public class UserPattern {
 
     public void maintain(CDR cdr) {
         currentAvgPeriod.addFullValue(cdr.start);
+        monitoring.newValueFrequency(cdr.start, (60*60) / currentAvgPeriod.getValue());
     }
 
     private double patternFrequency(int start) {
@@ -105,7 +114,6 @@ public class UserPattern {
         int dayOfWeek = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7;  //Monday is 0
         return intensities[dayOfWeek*24 + dayHour];
     }
-
 
     public boolean isConverged() {
         return sigma < 5;  // for example
