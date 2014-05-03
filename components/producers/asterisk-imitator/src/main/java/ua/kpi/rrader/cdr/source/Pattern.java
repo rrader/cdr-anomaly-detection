@@ -24,8 +24,9 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
     @Override
     protected int nextTime(CallGenerator callGenerator) {
         Map.Entry<Float, Float> intensity = null;
-        Date date = new Date(callGenerator.getNearestEventTime()*1000);
+        Date date = new Date(callGenerator.getNearestEventTime()*1000L);
         Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
         int daySeconds = 60*(cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE));
 
@@ -40,19 +41,24 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
                 break;
             }
         }
+        int nextPeriodTime = callGenerator.getNearestEventTime() - daySeconds + nextPeriodStart;
 
         assert intensity != null;
-        if (random.nextDouble() > intensity.getValue()) {
-            // event haven't happened
-            int nextPeriodTime = callGenerator.getNearestEventTime() - daySeconds + nextPeriodStart;
+        double delta = -(Math.log(random.nextDouble()) / intensity.getKey());
+
+        int nextTime = (int) (callGenerator.getNearestEventTime() + delta);
+        if (nextTime > nextPeriodTime) {
             callGenerator.setNextEventTime(nextPeriodTime);
             return nextTime(callGenerator);
         }
 
-        double delta = -(Math.log(random.nextDouble()) / intensity.getKey());
+        if (random.nextDouble() > intensity.getValue()) {
+            // event haven't happened
+            callGenerator.setNextEventTime(nextTime);
+            return nextTime(callGenerator);
+        }
 //        System.out.println("[pattern] delta: " + delta);
 //        System.out.println(new Date((long) ((callGenerator.getNearestEventTime() + delta)*1000)));
-        int nextTime = (int) (callGenerator.getNearestEventTime() + delta);
         callGenerator.setNextEventTime(nextTime);
         return nextTime;
     }
@@ -74,14 +80,14 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
 
     public static Pattern newPattern1() {
         LinkedHashMap<Integer, Map.Entry<Float,Float>> intensities = new LinkedHashMap<Integer, Map.Entry<Float,Float>>();
-        intensities.put((int) (0.0*60*60), rate(1, 9.5f, 1f/30)); // once per 9.5 hours; once in 30 days
-        intensities.put((int) (6.5*60*60), rate(1, 1f, 1f/5));
-        intensities.put((int) (7.5*60*60), rate(1, 1f, 1f));
+        intensities.put((int) (0.0*60*60), rate(1, 9.5f, 0)); // once per 9.5 hours; once in 30 days
+//        intensities.put((int) (6.5*60*60), rate(1, 1f, 1f/5));
+//        intensities.put((int) (7.5*60*60), rate(1, 1f, 1f));
         intensities.put((int) (8.5*60*60), rate(6, 1f, 1f));
         intensities.put((int) (10.5*60*60), rate(12, 1f, 1f));
         intensities.put((int) (15.0*60*60), rate(12, 1f, 1f));
-        intensities.put((int) (18.0*60*60), rate(1, 3f, 1f));
-        intensities.put((int) (21.0*60*60), rate(1, 9.5f, 1f/30));
+        intensities.put((int) (18.0*60*60), rate(2, 3f, 1f));
+        intensities.put((int) (21.0*60*60), rate(1, 9.5f, 0));
         intensities.put((int) (24.0*60*60), rate(0, 1, 0)); //just to swap day
         return new Pattern(intensities);
     }
