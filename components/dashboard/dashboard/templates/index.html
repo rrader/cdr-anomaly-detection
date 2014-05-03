@@ -6,7 +6,7 @@
 
 <style type="text/css">
 .pattern {
-  width: 170px;
+  width: 200px;
 }
 
 </style>
@@ -14,11 +14,11 @@
 
 {% block content %}
     <!-- <h1 class="page-header">Статистика</h1> -->
-
+<h1>Шаблоны поведения в виде тепловой карты</h1>
 <div class="container-fluid">
 {% for phone,pattern in patterns.iteritems %}
   <div class="pull-left pattern">
-  <span class="badge">{{phone}}</span><br>
+  <h3>{{phone}}</h3><br>
 
     <script type="text/javascript+protovis">
     var nba = {{pattern | safe}};
@@ -36,7 +36,7 @@
             .range("white", "blue"));
 
     /* The cell dimensions. */
-    var w = 20, h = 15;
+    var w = 25, h = 15;
 
     var vis = new pv.Panel()
         .width(cols.length * w)
@@ -82,8 +82,9 @@
 
 </div>
 
+<h1>Поведение пользователей в реальном времени</h1>
 {% for phone,hist in hist.iteritems %}
-<h2>{{phone}}</h2>
+<h3>{{phone}}</h3>
 <div id="container{{phone}}" style="height: 400px"></div>
 
 <script type="text/javascript">

@@ -14,11 +14,14 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
      *   value: probability of event happen
      *      (imitation of Erlang stream, when it's 1.0 it's just exponential stream)
      */
-    private LinkedHashMap<Integer, Map.Entry<Float,Float>> intensities;
+    private LinkedHashMap<Integer, Map.Entry<Float, Float>> intensities;
+    private LinkedHashMap<Integer, Map.Entry<Float, Float>> weekendIntensities;
     private final Random random = new Random();
 
-    public Pattern(LinkedHashMap<Integer, Map.Entry<Float,Float>> intensities) {
+    public Pattern(LinkedHashMap<Integer, Map.Entry<Float,Float>> intensities,
+                   LinkedHashMap<Integer, Map.Entry<Float,Float>> weekendIntensities) {
         this.intensities = intensities;
+        this.weekendIntensities = weekendIntensities;
     }
 
     @Override
@@ -29,10 +32,11 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.setTime(date);
         int daySeconds = 60*(cal.get(Calendar.HOUR_OF_DAY)*60 + cal.get(Calendar.MINUTE));
+        int weekDay = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7; // Monday is 0
 
         int periodStart = 0;
         int nextPeriodStart = 0;
-        for (Map.Entry<Integer, Map.Entry<Float,Float>> pair : intensities.entrySet()) {
+        for (Map.Entry<Integer, Map.Entry<Float,Float>> pair : getIntensities(weekDay).entrySet()) {
             if (daySeconds >= pair.getKey()) {
                 intensity = pair.getValue();
                 periodStart = pair.getKey();
@@ -63,6 +67,12 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
         return nextTime;
     }
 
+    private LinkedHashMap<Integer, Map.Entry<Float, Float>> getIntensities(int weekDay) {
+        if (weekDay >= 5)
+            return weekendIntensities;
+        return intensities;
+    }
+
     public static final float PERIOD_HOUR = 60*60;
 
     /**
@@ -81,15 +91,21 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
     public static Pattern newPattern1() {
         LinkedHashMap<Integer, Map.Entry<Float,Float>> intensities = new LinkedHashMap<Integer, Map.Entry<Float,Float>>();
         intensities.put((int) (0.0*60*60), rate(1, 9.5f, 0)); // once per 9.5 hours; once in 30 days
-//        intensities.put((int) (6.5*60*60), rate(1, 1f, 1f/5));
-//        intensities.put((int) (7.5*60*60), rate(1, 1f, 1f));
         intensities.put((int) (8.5*60*60), rate(6, 1f, 1f));
         intensities.put((int) (10.5*60*60), rate(12, 1f, 1f));
         intensities.put((int) (15.0*60*60), rate(12, 1f, 1f));
         intensities.put((int) (18.0*60*60), rate(2, 3f, 1f));
         intensities.put((int) (21.0*60*60), rate(1, 9.5f, 0));
         intensities.put((int) (24.0*60*60), rate(0, 1, 0)); //just to swap day
-        return new Pattern(intensities);
+
+        LinkedHashMap<Integer, Map.Entry<Float,Float>> weekendIntensities = new LinkedHashMap<Integer, Map.Entry<Float,Float>>();
+        weekendIntensities.put((int) (0.0 * 60 * 60), rate(1, 13.5f, 0));
+        weekendIntensities.put((int) (10.5 * 60 * 60), rate(2, 4.5f, 1f));
+        weekendIntensities.put((int) (15.0 * 60 * 60), rate(2, 3f, 1f));
+        weekendIntensities.put((int) (18.0 * 60 * 60), rate(2, 3f, 1f));
+        weekendIntensities.put((int) (21.0 * 60 * 60), rate(1, 13.5f, 0));
+        weekendIntensities.put((int) (24.0 * 60 * 60), rate(0, 1, 0)); //just to swap day
+        return new Pattern(intensities, weekendIntensities);
     }
 
     public static Pattern newPattern2() {
