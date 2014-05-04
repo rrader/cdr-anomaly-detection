@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.storm.util.ExponentialMovingAverage;
 import ua.kpi.rrader.cdr.storm.util.Monitoring;
+import ua.kpi.rrader.cdr.storm.util.Trend;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 /**
  * User pattern
@@ -18,7 +20,7 @@ import static java.lang.Math.abs;
  * over all cluster
  */
 public class UserPattern {
-    private static final String PATH = "../../pig-tools/patterns/part-r-00000";
+    private static final String PATTERNS_PATH = "../../pig-tools/patterns/part-r-00000";
     private static Map<String, UserPattern> patterns = null;
     private final Monitoring monitoring;
 
@@ -29,6 +31,7 @@ public class UserPattern {
     private ExponentialMovingAverage currentAvgPeriod = new ExponentialMovingAverage(0.2);  // 1 - alpha
 
     public UserPattern(String src, double[] pattern, double[] sigmas) {
+        this.src = src;
         this.intensities = pattern;
         this.sigmas = sigmas;
         monitoring = new Monitoring(src);
@@ -54,7 +57,7 @@ public class UserPattern {
         CSVReader reader = null;
         HashMap<String, UserPattern> patterns = null;
         try {
-            reader = new CSVReader(new FileReader(PATH));
+            reader = new CSVReader(new FileReader(PATTERNS_PATH));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -101,7 +104,19 @@ public class UserPattern {
         double sigma = patternSigma(cdr.start);
         double currentFreq = (60*60) / currentAvgPeriod.withNewFullValue(cdr.start);
 
-        return abs(patternFreq - currentFreq) <= 1.96*sigma; //95%
+        double modifier = Trend.getInstance().trendValue(src);
+        monitoring.newMetricValue("modifier" + Trend.clusterFor(src), cdr.start, modifier);
+
+        double d = (patternFreq - currentFreq) / (2*1.96*sigma); //fmax-fmin=2*1.96*sigma
+
+        monitoring.newMetricValue("deviation", cdr.start, d);
+        Trend.getInstance().notifyFrequency(src, d);
+
+        double upper = 1.0;
+        double lower = 1.0;
+        if (modifier > 0) upper += abs(modifier)/(1.96*sigma);
+        if (modifier < 0) lower -= abs(modifier)/(1.96*sigma);
+        return d < upper && d > lower;
     }
 
     public void maintain(CDR cdr) {
@@ -126,7 +141,7 @@ public class UserPattern {
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         int dayHour = cal.get(Calendar.HOUR_OF_DAY);
         int dayOfWeek = (cal.get(Calendar.DAY_OF_WEEK) + 5) % 7;  //Monday is 0
-        return sigmas[dayOfWeek*24 + dayHour];
+        return max(1.0, sigmas[dayOfWeek*24 + dayHour]);
     }
 
     public boolean isConverged() {

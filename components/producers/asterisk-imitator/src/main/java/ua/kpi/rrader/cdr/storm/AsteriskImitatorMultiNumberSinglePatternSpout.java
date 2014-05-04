@@ -8,10 +8,10 @@ import ua.kpi.rrader.cdr.source.PhoneBook;
 
 import java.util.List;
 
-public class AsteriskImitatorMultiNumberSpout extends AsteriskImitatorSpout {
+public class AsteriskImitatorMultiNumberSinglePatternSpout extends AsteriskImitatorSpout {
     private List<String> phoneNumbers;
 
-    public AsteriskImitatorMultiNumberSpout(List<String> phoneNumbers) {
+    public AsteriskImitatorMultiNumberSinglePatternSpout(List<String> phoneNumbers) {
         this.phoneNumbers = phoneNumbers;
     }
 

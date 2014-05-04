@@ -4,9 +4,13 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Monitoring {
     private String phone;
-    private Integer prevFreqTime = null;
+    private Map<String, Integer> prevTime = new HashMap<String, Integer>();
     private static JedisPool redisPool = new JedisPool(new JedisPoolConfig(), "localhost");
 
     public Monitoring(String phone) {
@@ -14,19 +18,23 @@ public class Monitoring {
     }
 
     public void newValueFrequency(int time, double value) {
+        newMetricValue("frequency", time, value);
+    }
+
+    public void newMetricValue(String name, int time, double value) {
         int hc = time / (60*60);
-        if (prevFreqTime != null) {
-            int hp = prevFreqTime / (60*60);
+        if (prevTime.get(name) != null) {
+            int hp = prevTime.get(name) / (60*60);
 
             if (hp == hc) return;
 
             if (hc - hp > 1) {
                 for (int i=hp+1; i<hc; i++)
-                    addValue("frequency", i, 24*7*4, 0);
+                    addValue(name, i, 24*7*4, 0);
             }
         }
-        prevFreqTime = time;
-        addValue("frequency", 24*7*4, hc, value);
+        prevTime.put(name, time);
+        addValue(name, 24*7*4, hc, value);
     }
 
     private void addValue(String name, int limit, int hour, double value) {

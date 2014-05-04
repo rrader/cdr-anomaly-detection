@@ -109,7 +109,20 @@ public class Pattern extends GeneratorsCollection<CallGenerator> {
     }
 
     public static Pattern newPattern2() {
-        //TODO: create pattern 2
-        return newPattern1();
+        LinkedHashMap<Integer, Map.Entry<Float,Float>> intensities = new LinkedHashMap<Integer, Map.Entry<Float,Float>>();
+        intensities.put((int) (0.0*60*60), rate(1, 9.5f, 1/30f)); // once per 9.5 hours; once in 30 days
+        intensities.put((int) (8.5*60*60), rate(6, 1f, 1f));
+        intensities.put((int) (9.0*60*60), rate(1, 9f, 1f));
+        intensities.put((int) (18.0*60*60), rate(4, 3f, 1f));
+        intensities.put((int) (21.0*60*60), rate(1, 9.5f, 1/30f));
+        intensities.put((int) (24.0*60*60), rate(0, 1, 0)); //just to swap day
+
+        LinkedHashMap<Integer, Map.Entry<Float,Float>> weekendIntensities = new LinkedHashMap<Integer, Map.Entry<Float,Float>>();
+        weekendIntensities.put((int) (0.0 * 60 * 60), rate(1, 13.5f, 0));
+        weekendIntensities.put((int) (10.5 * 60 * 60), rate(1, 4.5f, 1f));
+        weekendIntensities.put((int) (15.0 * 60 * 60), rate(5, 8f, 1f));
+        weekendIntensities.put((int) (23.0 * 60 * 60), rate(1, 13.5f, 0));
+        weekendIntensities.put((int) (24.0 * 60 * 60), rate(0, 1, 0)); //just to swap day
+        return new Pattern(intensities, weekendIntensities);
     }
 }

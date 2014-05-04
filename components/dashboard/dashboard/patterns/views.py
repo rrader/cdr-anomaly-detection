@@ -48,14 +48,14 @@ def home(request):
         pattern = raw_patterns["+" + key]
         last_hour = int(r.get("h_" + phone))
         hist[key] = {}
-        hist[key]["data"] = list_to_js(list(enumerate(reversed(r.lrange(phone, 0, PERIOD)))))
+        hist[key]["data"] = list_to_js(list(enumerate(reversed(r.lrange(phone, 0, PERIOD-1)))))
 
-        last_hour -= PERIOD  # first data hour
+        last_hour -= PERIOD+1  # first data hour
         h = last_hour - (last_hour // 24) * 24
         w = (last_hour//24 + 3)%7
         first = w*24+h
         p_value = lambda i: float(pattern["data"][(first + i) % (24*7)])  # pattern
-        s_value = lambda i: 1.96 * float(pattern["sigma"][(first + i) % (24*7)])  # sigma
+        s_value = lambda i: 1.96 * max(1.0, float(pattern["sigma"][(first + i) % (24*7)]))  # sigma
 
         hist[key]["pattern"] = list_to_js(list(enumerate([p_value(i) for i in range(0, PERIOD)])))
         hist[key]["appropriate"] = list_to_js_i(list(enumerate([(max(0, p_value(i) - s_value(i)), p_value(i) + s_value(i)) for i in range(0, PERIOD)])))
