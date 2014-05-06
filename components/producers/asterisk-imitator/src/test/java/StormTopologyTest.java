@@ -91,7 +91,7 @@ public class StormTopologyTest {
         }
 
         builder.setSpout("cdr", new AsteriskImitatorMultiNumberMultiPatternSpout(numbers1, numbers2), 1);
-        builder.setBolt("process", new ProcessBolt(), 2-).fieldsGrouping("cdr", new Fields("src"));
+        builder.setBolt("process", new ProcessBolt(), 2).fieldsGrouping("cdr", new Fields("src"));
 
         Config conf = new Config();
 
