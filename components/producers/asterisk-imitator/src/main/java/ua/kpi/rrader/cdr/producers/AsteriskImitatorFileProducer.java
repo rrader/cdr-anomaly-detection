@@ -2,6 +2,7 @@ package ua.kpi.rrader.cdr.producers;
 
 
 import kafka.javaapi.producer.Producer;
+import ua.kpi.rrader.cdr.producers.strategy.PatternCollectionGenerationStrategy;
 import ua.kpi.rrader.cdr.source.*;
 
 import java.io.FileNotFoundException;
@@ -9,8 +10,13 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-public abstract class AsteriskImitatorFileProducer extends BaseProducer {
+public class AsteriskImitatorFileProducer extends BaseProducer {
     private static PrintWriter writer = null;
+    private PatternCollectionGenerationStrategy patternCollectionGenerationStrategy;
+
+    public AsteriskImitatorFileProducer(PatternCollectionGenerationStrategy patternCollectionGenerationStrategy) {
+        this.patternCollectionGenerationStrategy = patternCollectionGenerationStrategy;
+    }
 
     public void doProduce() {
         try {
@@ -25,8 +31,6 @@ public abstract class AsteriskImitatorFileProducer extends BaseProducer {
         }
         writer.close();
     }
-
-    protected abstract PatternCollection makePatternCollection(PhoneBook phoneBook);
 
     private static int id = 1;
     private static int[] hours = new int[7*24];
@@ -50,5 +54,10 @@ public abstract class AsteriskImitatorFileProducer extends BaseProducer {
             System.out.println(x);
             System.exit(0);
         }
+    }
+
+    @Override
+    protected PatternCollection makePatternCollection(PhoneBook phoneBook) {
+        return patternCollectionGenerationStrategy.makePatternCollection(phoneBook);
     }
 }

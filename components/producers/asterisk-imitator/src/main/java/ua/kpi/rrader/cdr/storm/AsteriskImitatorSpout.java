@@ -6,14 +6,22 @@ import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
+import ua.kpi.rrader.cdr.producers.AsteriskImitatorKafkaProducer;
+import ua.kpi.rrader.cdr.producers.strategy.PatternCollectionGenerationStrategy;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.source.PatternCollection;
+import ua.kpi.rrader.cdr.source.PhoneBook;
 
 import java.util.Map;
 
-public abstract class AsteriskImitatorSpout extends BaseRichSpout {
+public class AsteriskImitatorSpout extends BaseRichSpout {
     protected PatternCollection generator;
     private SpoutOutputCollector collector;
+    private PatternCollectionGenerationStrategy patternCollectionGenerationStrategy;
+
+    public AsteriskImitatorSpout(PatternCollectionGenerationStrategy patternCollectionGenerationStrategy) {
+        this.patternCollectionGenerationStrategy = patternCollectionGenerationStrategy;
+    }
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
@@ -28,7 +36,10 @@ public abstract class AsteriskImitatorSpout extends BaseRichSpout {
         generator.initTime(345600);  // Mon, 05 Jan 1970 00:00:00 GMT
     }
 
-    protected abstract PatternCollection makeCallers();
+    protected PatternCollection makeCallers() {
+        PhoneBook phoneBook = PhoneBook.generatePhoneBook(AsteriskImitatorKafkaProducer.PHONE_NUMBER_COUNT);
+        return patternCollectionGenerationStrategy.makePatternCollection(phoneBook);
+    }
 
     @Override
     public void nextTuple() {

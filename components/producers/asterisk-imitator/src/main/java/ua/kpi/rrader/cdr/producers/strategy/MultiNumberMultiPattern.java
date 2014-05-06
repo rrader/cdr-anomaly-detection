@@ -1,6 +1,5 @@
-package ua.kpi.rrader.cdr.storm;
+package ua.kpi.rrader.cdr.producers.strategy;
 
-import ua.kpi.rrader.cdr.producers.AsteriskImitatorKafkaProducer;
 import ua.kpi.rrader.cdr.source.Caller;
 import ua.kpi.rrader.cdr.source.Pattern;
 import ua.kpi.rrader.cdr.source.PatternCollection;
@@ -8,18 +7,16 @@ import ua.kpi.rrader.cdr.source.PhoneBook;
 
 import java.util.List;
 
-public class AsteriskImitatorMultiNumberMultiPatternSpout extends AsteriskImitatorSpout {
+public class MultiNumberMultiPattern implements PatternCollectionGenerationStrategy {
     private List<String> phoneNumbers1;
     private List<String> phoneNumbers2;
 
-    public AsteriskImitatorMultiNumberMultiPatternSpout(List<String> phoneNumbers1, List<String> phoneNumbers2) {
+    public MultiNumberMultiPattern(List<String> phoneNumbers1, List<String> phoneNumbers2) {
         this.phoneNumbers1 = phoneNumbers1;
         this.phoneNumbers2 = phoneNumbers2;
     }
 
-    @Override
-    protected PatternCollection makeCallers() {
-        PhoneBook phoneBook = PhoneBook.generatePhoneBook(AsteriskImitatorKafkaProducer.PHONE_NUMBER_COUNT);
+    public PatternCollection makePatternCollection(PhoneBook phoneBook) {
         Pattern p1 = Pattern.newPattern1();
         Pattern p2 = Pattern.newPattern2();
         for(String phoneNumber : phoneNumbers1) {

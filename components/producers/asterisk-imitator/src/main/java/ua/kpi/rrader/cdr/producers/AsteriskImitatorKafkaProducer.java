@@ -3,6 +3,8 @@ package ua.kpi.rrader.cdr.producers;
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
+import ua.kpi.rrader.cdr.producers.strategy.PatternCollectionGenerationStrategy;
+import ua.kpi.rrader.cdr.producers.strategy.SingleNumber;
 import ua.kpi.rrader.cdr.source.*;
 
 import java.io.FileNotFoundException;
@@ -10,8 +12,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 public class AsteriskImitatorKafkaProducer extends BaseProducer {
+    private PatternCollectionGenerationStrategy patternCollectionGenerationStrategy;
+
+    public AsteriskImitatorKafkaProducer(PatternCollectionGenerationStrategy patternCollectionGenerationStrategy) {
+        this.patternCollectionGenerationStrategy = patternCollectionGenerationStrategy;
+    }
+
     public static void main(String[] args) throws InterruptedException, FileNotFoundException, UnsupportedEncodingException {
-        AsteriskImitatorKafkaProducer producer = new AsteriskImitatorKafkaProducer();
+        AsteriskImitatorKafkaProducer producer = new AsteriskImitatorKafkaProducer(new SingleNumber("+380000111111"));
         producer.initialize();
         producer.run(args);
     }
@@ -36,11 +44,6 @@ public class AsteriskImitatorKafkaProducer extends BaseProducer {
     }
 
     protected PatternCollection makePatternCollection(PhoneBook phoneBook) {
-        Caller caller1 = new Caller(phoneBook.nextRandomNumber(), phoneBook);
-        Pattern p1 = Pattern.newPattern1();
-        p1.add(caller1);
-        PatternCollection generator = new PatternCollection();
-        generator.add(p1);
-        return generator;
+        return patternCollectionGenerationStrategy.makePatternCollection(phoneBook);
     }
 }

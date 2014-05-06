@@ -1,57 +1,40 @@
 import org.junit.Test;
-import ua.kpi.rrader.cdr.producers.AsteriskImitatorFileMultiNumberMultiPatternProducer;
-import ua.kpi.rrader.cdr.producers.AsteriskImitatorFileMultiNumberOnePatternProducer;
 import ua.kpi.rrader.cdr.producers.AsteriskImitatorFileProducer;
-import ua.kpi.rrader.cdr.producers.AsteriskImitatorFileSingleNumberProducer;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class ImitatorTest {
     @Test
     public void testOneNumberFile() throws Exception {
-        AsteriskImitatorFileProducer producer = new AsteriskImitatorFileSingleNumberProducer("+380009013947");
+        AsteriskImitatorFileProducer producer = new AsteriskImitatorFileProducer(
+                GeneratorFabric.oneNumber()
+        );
         producer.doProduce();
     }
 
     @Test
     public void testMultiNumberOnePatternFile() throws Exception {
-        List<String> numbers = new ArrayList<String>();
-        numbers.add("+380009013946");
-        numbers.add("+380009013947");
-        numbers.add("+380009013948");
-        numbers.add("+380009013949");
         AsteriskImitatorFileProducer producer =
-                new AsteriskImitatorFileMultiNumberOnePatternProducer(numbers);
+                new AsteriskImitatorFileProducer(
+                        GeneratorFabric.multiNumberOnePattern()
+                );
         producer.doProduce();
     }
 
     @Test
     public void testMultiNumberMultiPatternFile() throws Exception {
-        List<String> numbers1 = new ArrayList<String>();
-        numbers1.add("+380009013946");
-        numbers1.add("+380009013947");
-        List<String> numbers2 = new ArrayList<String>();
-        numbers2.add("+380009013948");
-        numbers2.add("+380009013949");
         AsteriskImitatorFileProducer producer =
-                new AsteriskImitatorFileMultiNumberMultiPatternProducer(numbers1, numbers2);
+                new AsteriskImitatorFileProducer(
+                        GeneratorFabric.multiNumberMultiPatternSmall()
+                );
         producer.doProduce();
     }
 
     @Test
     public void testMassive() throws Exception {
-        List<String> numbers1 = new ArrayList<String>();
-        for (int i=10; i<60; i++) {  // 50 numbers
-            numbers1.add("+3800000001" + i);
-        }
-
-        List<String> numbers2 = new ArrayList<String>();
-        for (int i=10; i<60; i++) {  // 50 numbers
-            numbers2.add("+3800000002" + i);
-        }
         AsteriskImitatorFileProducer producer =
-                new AsteriskImitatorFileMultiNumberMultiPatternProducer(numbers1, numbers2);
+                new AsteriskImitatorFileProducer(
+                        GeneratorFabric.multiNumberMultiPatternBig()
+                );
         producer.doProduce();
     }
 }
