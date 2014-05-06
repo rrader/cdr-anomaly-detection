@@ -4,6 +4,7 @@ import au.com.bytecode.opencsv.CSVReader;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.storm.util.ExponentialMovingAverage;
 import ua.kpi.rrader.cdr.storm.util.Monitoring;
+import ua.kpi.rrader.cdr.storm.util.PhoneMonitoring;
 import ua.kpi.rrader.cdr.storm.util.Trend;
 
 import java.io.FileNotFoundException;
@@ -29,12 +30,13 @@ public class UserPattern {
     private double[] sigmas;
 
     private ExponentialMovingAverage currentAvgPeriod = new ExponentialMovingAverage(0.2);  // 1 - alpha
+    private ExponentialMovingAverage deviation = new ExponentialMovingAverage(0.2);  // 1 - alpha
 
     public UserPattern(String src, double[] pattern, double[] sigmas) {
         this.src = src;
         this.intensities = pattern;
         this.sigmas = sigmas;
-        monitoring = new Monitoring(src);
+        monitoring = new PhoneMonitoring(src);
     }
 
     public double[] getIntensities() {
@@ -104,19 +106,23 @@ public class UserPattern {
         double sigma = patternSigma(cdr.start);
         double currentFreq = (60*60) / currentAvgPeriod.withNewFullValue(cdr.start);
 
-        double modifier = Trend.getInstance().trendValue(src);
-        monitoring.newMetricValue("modifier" + Trend.clusterFor(src), cdr.start, modifier);
+        double modifier = Trend.getInstance().trendValue(src, cdr.start);
+        monitoring.newMetricValue("modifier" + Trend.clusterFor(src), cdr.start, String.valueOf(modifier));
 
-        double d = (patternFreq - currentFreq) / (2*1.96*sigma); //fmax-fmin=2*1.96*sigma
+        double d = (currentFreq - patternFreq) / (2*1.96*sigma); //fmax-fmin=2*1.96*sigma
+        deviation.newValue(d);
 
-        monitoring.newMetricValue("deviation", cdr.start, d);
+        monitoring.newMetricValue("deviation", cdr.start, String.valueOf(deviation.getValue()));
+        monitoring.newMetricValue("diff", cdr.start, String.valueOf(currentFreq - patternFreq));
         Trend.getInstance().notifyFrequency(src, d);
 
         double upper = 1.0;
-        double lower = 1.0;
+        double lower = -1.0;
         if (modifier > 0) upper += abs(modifier)/(1.96*sigma);
         if (modifier < 0) lower -= abs(modifier)/(1.96*sigma);
-        return d < upper && d > lower;
+        monitoring.newMetricValue("deviation_limits", cdr.start,
+                upper + "," + lower, "1.0,-1.0");
+        return deviation.getValue() < upper && deviation.getValue() > lower;
     }
 
     public void maintain(CDR cdr) {
@@ -125,7 +131,7 @@ public class UserPattern {
     }
 
     private double patternFrequency(int start) {
-        Date date = new Date(start*1000);
+        Date date = new Date(start*1000L);
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -135,7 +141,7 @@ public class UserPattern {
     }
 
     private double patternSigma(int start) {
-        Date date = new Date(start*1000);
+        Date date = new Date(start*1000L);
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.setTimeZone(TimeZone.getTimeZone("UTC"));

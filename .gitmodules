@@ -1,6 +1,7 @@
 [submodule "components/k8hadoop"]
 	path = components/k8hadoop
 	url = https://github.com/javayoyobj/k8hadoop.git
+	ignore = untracked
 [submodule "components/KMeansHadoop"]
 	path = components/KMeansHadoop
 	url = git@github.com:rrader/KMeansHadoop.git

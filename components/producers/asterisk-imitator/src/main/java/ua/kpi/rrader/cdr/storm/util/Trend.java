@@ -15,6 +15,7 @@ public class Trend {
     private static JedisPool redisPool = new JedisPool(new JedisPoolConfig(), "localhost");
     private static final String CLUSTERS_PATH = "../../KMeansHadoop/clusters.dat";
     private static Trend instance = new Trend();
+    private static final Map<Integer, Monitoring> clusterMonitoring = new HashMap<Integer, Monitoring>();
 
     public void notifyFrequency(String src, double freq) {
         Jedis jedis = redisPool.getResource();
@@ -24,12 +25,18 @@ public class Trend {
         redisPool.returnResource(jedis);
     }
 
+    private static Monitoring getMonitoringForCluster(int cluster) {
+        if (!clusterMonitoring.containsKey(cluster))
+            clusterMonitoring.put(cluster, new ClusterMonitoring(cluster));
+        return clusterMonitoring.get(cluster);
+    }
+
     /**
      * Trend modifier
      * @param src phone number
      * @return coefficient for sigma
      */
-    public double trendValue(String src) {
+    public double trendValue(String src, int time) {
         Jedis jedis = redisPool.getResource();
         String pattern = "currentFrequency:" + clusterFor(src) + ":*";
         double modifier = 0;
@@ -39,8 +46,14 @@ public class Trend {
             count += 1;
         }
         redisPool.returnResource(jedis);
-        if (count == 0) return 0;
-        return modifier / count;
+        double trend;
+        if (count == 0) trend = 0;
+        else trend = modifier / count;
+
+        if (clusterFor(src) != null)
+            getMonitoringForCluster(clusterFor(src))
+                    .newMetricValue("clusterTrend", time, String.valueOf(trend));
+        return trend;
     }
 
     public static Trend getInstance() {

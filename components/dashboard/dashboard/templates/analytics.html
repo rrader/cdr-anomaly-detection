@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Панель управления{% endblock %}
+
+{% block custom_head %}
+
+<style type="text/css">
+.pattern {
+  width: 240px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h1>Отклонения</h1>
+{% for phone,hist in deviation.iteritems %}
+<h3>{{phone}}</h3>
+<div id="container{{phone}}" style="height: 400px"></div>
+
+<script type="text/javascript">
+        $(function () {
+
+            var deviation = {{hist.data | safe}},
+                limits = {{hist.deviation_limits | safe}},
+                diff = {{hist.diff | safe}};
+
+            $('#container{{phone}}').highcharts({
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    title: {
+                        text: null
+                    },
+                    type: 'linear',
+                    labels: {
+                        enabled: false
+                    },
+                    lineWidth: 0,
+                    tickWidth: 0
+                },
+
+                yAxis: {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        enabled: false
+                    },
+                    gridLineWidth: 0
+                },
+
+                tooltip: {
+                    crosshairs: true,
+                    shared: true,
+                    valueSuffix: ''
+                },
+
+                legend: {
+                    enabled: true
+                },
+
+                series: [{
+                    id: 'valueLine',
+                    name: 'Deviation',
+                    type: 'spline',
+                    data: deviation,
+                    zIndex: 1,
+                    color: 'black',
+                    shadow: false,
+                    lineWidth: 0.5,
+                    marker: {
+                        fillColor: 'black',
+                        lineWidth: 1,
+                        radius: 2,
+                        lineColor: "white",
+                        enabled: true,
+                        symbol: 'circle'
+                    }
+                }, {
+                    id: 'limitsArea',
+                    name: 'Limits',
+                    data: limits,
+                    type: 'areasplinerange',
+                    lineWidth: 1,
+                    lineColor: 'gray',
+                    // linkedTo: 'valueLine',
+                    color: "lightGray",
+                    fillOpacity: 0.3,
+                    zIndex: 0
+                }
+                // ,
+                // {
+                //     id: 'sigmaLine',
+                //     name: 'Diff',
+                //     type: 'spline',
+                //     data: diff,
+                //     zIndex: 1,
+                //     color: 'gray',
+                //     shadow: true,
+                //     lineWidth: 0.5,
+                //     marker: {
+                //         fillColor: 'gray',
+                //         lineWidth: 1,
+                //         radius: 2,
+                //         lineColor: "white",
+                //         enabled: true,
+                //         symbol: 'circle'
+                //     }
+                // }
+                ]
+
+            });
+
+        });
+
+</script>
+{% endfor %}
+
+
+{% endblock %}

@@ -5,42 +5,43 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class Monitoring {
-    private String phone;
-    private Map<String, Integer> prevTime = new HashMap<String, Integer>();
+public abstract class Monitoring {
     private static JedisPool redisPool = new JedisPool(new JedisPoolConfig(), "localhost");
-
-    public Monitoring(String phone) {
-        this.phone = phone;
-    }
+    private Map<String, Integer> prevTime = new HashMap<String, Integer>();
 
     public void newValueFrequency(int time, double value) {
-        newMetricValue("frequency", time, value);
+        newMetricValue("frequency", time, String.valueOf(value));
     }
 
-    public void newMetricValue(String name, int time, double value) {
+    public void newMetricValue(String name, int time, String value) {
+        newMetricValue(name, time, value, String.valueOf(0));
+    }
+
+    public void newMetricValue(String name, int time, String value, String defaultValue) {
         int hc = time / (60*60);
-        if (prevTime.get(name) != null) {
-            int hp = prevTime.get(name) / (60*60);
+        String h_key = "hm_" + name + getKeySuffix();
+        if (prevTime.get(h_key) != null) {
+            int hp = prevTime.get(h_key) / (60*60);
 
             if (hp == hc) return;
 
             if (hc - hp > 1) {
                 for (int i=hp+1; i<hc; i++)
-                    addValue(name, i, 24*7*4, 0);
+                    addValue(name, i, 24*7*4, defaultValue);
             }
         }
-        prevTime.put(name, time);
+        prevTime.put(h_key, time);
         addValue(name, 24*7*4, hc, value);
     }
 
-    private void addValue(String name, int limit, int hour, double value) {
+    protected abstract String getKeySuffix();
+
+    private void addValue(String name, int limit, int hour, String value) {
         Jedis jedis = redisPool.getResource();
-        String key = name + ":" + phone;
-        jedis.lpush(key, String.valueOf(value));
+        String key = name + getKeySuffix();
+        jedis.lpush(key, value);
         jedis.ltrim(key, 0, limit - 1);
         jedis.set("h_" + key, String.valueOf(hour));
         redisPool.returnResource(jedis);

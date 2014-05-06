@@ -6,7 +6,7 @@
 
 <style type="text/css">
 .pattern {
-  width: 200px;
+  width: 240px;
 }
 
 </style>
@@ -18,10 +18,11 @@
 <div class="container-fluid">
 {% for phone,pattern in patterns.iteritems %}
   <div class="pull-left pattern">
-  <h3>{{phone}}</h3><br>
+  <font size="4">{{phone}} <span class="label label-success">{{pattern.class}}</span></font><br>
 
     <script type="text/javascript+protovis">
-    var nba = {{pattern | safe}};
+    var colors = ["black", "blue", "orange", "green", "red", "yellow", "violet"];
+    var nba = {{pattern.data | safe}};
 
     /* Convert from tabular format to array of objects. */
     var cols = nba.shift();
@@ -33,7 +34,7 @@
         s = pv.dict(cols, function(f) pv.deviation(nba, function(d) d[f])),
      fill = pv.dict(cols, function(f) pv.Scale.linear()
             .domain(-3 * s[f] + x[f], 3 * s[f] + x[f])
-            .range("white", "blue"));
+            .range("white", colors["{{pattern.class}}"=="None"?0:{{pattern.class}}+1]));
 
     /* The cell dimensions. */
     var w = 25, h = 15;
@@ -84,7 +85,6 @@
 
 <h1>Поведение пользователей в реальном времени</h1>
 {% for phone,hist in hist.iteritems %}
-<h3>{{phone}}</h3>
 <div id="container{{phone}}" style="height: 400px"></div>
 
 <script type="text/javascript">
@@ -97,7 +97,7 @@
 
             $('#container{{phone}}').highcharts({
                 title: {
-                    text: null
+                    text: "{{phone}}"
                 },
                 xAxis: {
                     title: {

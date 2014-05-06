@@ -38,4 +38,20 @@ public class ImitatorTest {
                 new AsteriskImitatorFileMultiNumberMultiPatternProducer(numbers1, numbers2);
         producer.doProduce();
     }
+
+    @Test
+    public void testMassive() throws Exception {
+        List<String> numbers1 = new ArrayList<String>();
+        for (int i=10; i<60; i++) {  // 50 numbers
+            numbers1.add("+3800000001" + i);
+        }
+
+        List<String> numbers2 = new ArrayList<String>();
+        for (int i=10; i<60; i++) {  // 50 numbers
+            numbers2.add("+3800000002" + i);
+        }
+        AsteriskImitatorFileProducer producer =
+                new AsteriskImitatorFileMultiNumberMultiPatternProducer(numbers1, numbers2);
+        producer.doProduce();
+    }
 }
