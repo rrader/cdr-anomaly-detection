@@ -9,5 +9,17 @@ protocol.pdf: $(lib_files) $(protocol_files) myrefs.bib
 	pdflatex $<
 	pdflatex $<
 
-abstract.pdf: abstract.tex $(lib_files)
+abstract.pdf: abstract/abstract.tex $(lib_files)
 	pdflatex $<
+
+appendixtitles.pdf: appendixtitles/appendixtitles.tex $(lib_files)
+	pdflatex $<
+
+tz.pdf: tz/tz.tex $(lib_files)
+	pdflatex $<
+	pdflatex $<
+
+all: abstract.pdf appendixtitles.pdf protocol.pdf
+
+clean:
+	rm *.log *.aux *.out *.thm *.toc
