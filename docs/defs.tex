@@ -1,0 +1,376 @@
+% vim: nocindent:
+
+\hyphenation
+{
+  Open-FOAM
+  ал-го-рит-мів
+  ал-го-рит-мом
+  ал-го-рит-му
+  апро-кси-ма-ція-ми
+  біб-ліо-те-ка
+  век-тор
+  век-то-ри
+  век-то-рів
+  виг-ля-ді
+  від-нос-но
+  від-по-ві-да-ють
+  влас-ний
+  влас-них
+  вуз-ла
+  вхід-них
+  дея-кі
+  до-дат-ко-ві
+  ефек-тив-ним
+  зас-то-со-вує-ться
+  зруч-но-му
+  ка-фед-рою
+  квад-рат
+  квад-рат-ної
+  ква-лі-фі-ка-цій-но
+  клас-тер-ної
+  кое-фі-ці-єнт
+  мак-си-маль-ної
+  мат-ри-ці
+  мат-риць
+  мат-ри-ця
+  мож-ли-вим
+  нас-туп-ні
+  не-мож-ли-во
+  об-роб-ля-ти
+  об-чис-ленні
+  об-чис-лення
+  об-чис-лень
+  об-чис-лю-валь-ни-ми
+  об-чис-лю-валь-но
+  об-чис-лю-валь-ної
+  пе-ре-тво-рен-ня
+  пос-лі-дов-нос-ті
+  прак-тич-не
+  пре-фікс-ної
+  про-дук-тив-ність
+  різ-но-ма-ніт-них
+  роз-рід-же-ної
+  си-ме-трич-них
+  си-ме-трич-ної
+  сис-тем
+  сис-те-мі
+  склад-ність
+  склад-но-сті
+  цик-лу
+}
+
+\ESKDdepartment{Міністерство освіти і науки України}
+\ESKDcompany{Національний технічний університет України%
+<<Київський політехнічний інститут>>}
+
+\ESKDauthor{Уварова~Н.\,В.}
+%\ESKDchecker{Стіренко~С.\,Г.}
+%\ESKDnormContr{Симоненко~В.\,П.}
+%\ESKDapprovedBy{Луцький~Г.\,М.}
+\ESKDdate{2012/01/16}
+\ESKDcolumnIX{НТУУ <<КПІ>> ФІОТ ІО-82}
+
+% Set text padding
+\ESKDsetPadding{10mm}{10mm}
+
+% Redefine TOC styles
+\makeatletter
+\renewcommand{\l@section}{\@dottedtocline{0}{1.5em}{2.3em}}
+\renewcommand{\l@subsection}{\@dottedtocline{1}{2.5em}{2.3em}}
+\renewcommand{\l@subsubsection}{\@dottedtocline{2}{3.5em}{2.3em}}
+\makeatother
+
+% Document separator
+\newcommand{\docseparator}[1]{
+  \newpage
+  \thispagestyle{empty}
+  \ESKDthisStyle{empty}
+  \noindent\parbox[c][\vsize][c]{\hsize}
+  {\centering\fontsize{36pt}{40pt}\selectfont#1}
+
+  % reset all counters
+  \setcounter{page}{0}
+  \setcounter{section}{0}
+  \setcounter{subsection}{0}
+  \setcounter{subsubsection}{0}
+}
+
+\newcommand{\apptitletop}[1]{%
+ДОДАТОК #1\par
+Алгоритм динамічної маршрутизації мультікастової розсилки}
+
+\newcommand{\apptitlepages}[1]{%
+Аркушів \pageref{LastPage}\par}
+
+% Appendix title page
+\newcommand{\appendixtitle}[3]{
+  \newpage
+  \thispagestyle{empty}
+  \ESKDthisStyle{empty}
+  \noindent
+  \parbox[t][0.15\vsize][t]{\hsize}
+  {\centering\large\apptitletop{#1}}
+  \parbox[t][0.4\vsize][c]{\hsize}
+  {\centering\Large\textbf{#2}\par#3}
+  \parbox[t][0.20\vsize][c]{\hsize}{~~}
+  \parbox[t][0.08\vsize][t]{\hsize}
+  {\centering\apptitlepages}
+  \vfill
+  \noindent\parbox[c]{\hsize}{\centering\titlebottom}
+
+  % reset all counters
+  \setcounter{page}{0}
+  \setcounter{section}{0}
+  \setcounter{subsection}{0}
+  \setcounter{subsubsection}{0}
+}
+
+% Header
+\newcommand{\titletop}{%
+\textbf{МІНІСТЕРСТВО ОСВІТИ І НАУКИ УКРАЇНИ}\par
+\textbf{НАЦІОНАЛЬНИЙ ТЕХНІЧНИЙ УНІВЕРСИТЕТ УКРАЇНИ}\par
+\textbf{<<КИЇВСЬКИЙ ПОЛІТЕХНІЧНИЙ ІНСТИТУТ>>}\par
+Факультет інформатики і обчислювальної техніки\par
+Кафедра обчислювальної техніки}
+
+\newcommand{\titledocname}{%
+БАКАЛАВРСЬКА ДИПЛОМНА РОБОТА\par
+НА ТЕМУ}
+
+\newcommand{\titledocnameI}{%
+БАКАЛАВРСЬКА ДИПЛОМНА РОБОТА}
+
+\newcommand{\titledocnameII}{%
+БАКАЛАВРСЬКА ДИПЛОМНА РОБОТА\par
+НА ТЕМУ}
+
+\newcommand{\titleregistry}{%
+\textbf{Реєстраційний \No} \underline{~~~~~~~~~~}}
+
+\newcommand{\titlescript}{%
+\textbf{На правах рукопису}\par
+УДК \underline{~~~~~~~~~~~~~~~~~~~~}}
+
+\newcommand{\titleapproveI}{%
+\textbf{Затверджую}\par
+зав. кафедрою, д.т.н., проф.\par
+\underline{~~~~~~~~~~~~~~~} (Луцький~Г.\,М.)\par
+\vspace{-3mm}{\small(підпис, дата)}}
+
+\newcommand{\titleapproveII}{%
+\textbf{Узгоджено}\par
+Науковий керівник\par
+к.т.н., доц.\par
+Стіренко Сергій Григорович\par
+~\par
+\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}\par
+\vspace{-3mm}{\small~~~~~~~~(підпис, дата)}}
+
+\newcommand{\titledefence}{%
+Захищено <<\underline{~~~}>> \underline{~~~~~~~~~~} 2012 р.\par
+З оцінкою \underline{~~~~~~~~~~~~~~~}\par
+Члени комісії\par
+\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}\par
+\vspace{2mm}\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}\par
+\vspace{2mm}\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}}
+
+\newcommand{\titletheme}{%
+\textbf{\underline{Реалізація задачі знаходження власних чисел та векторів}}\par
+\textbf{\underline{методом Ланцоша на кластерній системі}}}
+
+\newcommand{\titlesubtheme}{%
+Зі спеціальності (за напрямком) 6.050102\par
+<<Комп'ютерна інженерія>>}
+
+\newcommand{\titleauthorI}{%
+\textbf{Виконавець роботи}\par
+ФІОТ, гр. ІО-72\par
+номер залікової книжки: 7202\par
+Грибенко Дмитро В'ячеславович\par
+\vspace{2mm}\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}\par
+\vspace{-3mm}{\small~~~~~~~~(підпис, дата)}}
+
+\newcommand{\titleauthorII}{%
+\textbf{Виконавець роботи}\par
+Грибенко Дмитро В'ячеславович\par
+\vspace{2mm}\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}\par
+\vspace{-3mm}{\small~~~~~~~~(підпис, дата)}}
+
+\newcommand{\titleadviser}{%
+\textbf{Науковий керівник}\par
+к.т.н., доц.\par
+Стіренко Сергій Григорович\par
+~\par
+\vspace{2mm}\underline{~~~~~~~~~~~~~~~~~~~~~~~~~~~~~}\par
+\vspace{-3mm}{\small~~~~~~~~(підпис, дата)}}
+
+\newcommand{\titlebottom}{%
+Київ 2012~р.}
+
+\renewcommand{\maketitle}{
+  \thispagestyle{empty}
+  \ESKDthisStyle{title}
+
+  \noindent\parbox[c][0.15\vsize][t]{\hsize}
+  {\begin{center}\titletop\end{center}}
+  \parbox[t][0.08\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.4\hsize}{\raggedright\titleregistry}\hfill
+    \parbox[t]{0.4\hsize}{\raggedright\titlescript}
+  }
+  \parbox[t][0.1\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.4\hsize}{\raggedright}\hfill
+    \parbox[t]{0.4\hsize}{\raggedright\titleapproveI}
+  }
+  \parbox[t][0.05\vsize][c]{\hsize}{~~}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\begin{center}\titledocname\end{center}}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\begin{center}\titletheme\end{center}}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\begin{center}\titlesubtheme\end{center}}
+  \parbox[t][0.08\vsize][c]{\hsize}{~~}
+  \parbox[t][0.2\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.45\hsize}{\raggedright\titleauthorI}\hfill
+    \parbox[t]{0.4\hsize}{\raggedright\titleadviser}
+  }
+  \vfill
+  \begin{center}\titlebottom\end{center}
+}
+
+\newcommand{\maketitleI}{
+  \thispagestyle{empty}
+  \ESKDthisStyle{title}
+
+  \noindent\parbox[c][0.20\vsize][t]{\hsize}
+  {\centering\titletop}
+  \parbox[t][0.07\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.4\hsize}{\raggedright\titleregistry}\hfill
+    \parbox[t]{0.4\hsize}{\raggedright\titlescript}
+  }
+  \parbox[t][0.15\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.4\hsize}{\raggedright}\hfill
+    \parbox[t]{0.4\hsize}{\raggedright\titleapproveI}
+  }
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\centering\titledocnameI}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\centering\titlesubtheme}
+  \parbox[t][0.12\vsize][c]{\hsize}{~~}
+  \parbox[t][0.2\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.45\hsize}{\raggedright\titleauthorI}\hfill
+    \parbox[t]{0.4\hsize}{\raggedright\titleadviser}
+  }
+  \vfill
+  \noindent\parbox[c]{\hsize}{\centering\titlebottom}
+}
+
+\newcommand{\maketitleII}{
+  \thispagestyle{empty}
+  \ESKDthisStyle{title}
+
+  \noindent\parbox[c][0.15\vsize][t]{\hsize}
+  {\centering\titletop}
+  \parbox[t][0.20\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.45\hsize}{\raggedright\titleapproveII}\hfill
+    \parbox[t]{0.45\hsize}{\raggedright\titledefence}
+  }
+  \parbox[t][0.05\vsize][c]{\hsize}{~~}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\centering\titledocnameII}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\centering\titletheme}
+  \parbox[t][0.08\vsize][c]{\hsize}
+  {\centering\titlesubtheme}
+  \parbox[t][0.10\vsize][c]{\hsize}{~~}
+  \parbox[t][0.2\vsize][t]{\hsize}
+  {
+    \parbox[t]{0.45\hsize}{\raggedright}\hfill
+    \parbox[t]{0.45\hsize}{\raggedright\titleauthorII}
+  }
+  \vfill
+  \noindent\parbox[c]{\hsize}{\centering\titlebottom}
+}
+
+\makeatletter
+\newcommand\bigpart[1]{%
+  \begingroup%
+  \ESKDsectAlign{section}{Center}%
+  \section*{#1%
+    \@mkboth{%
+      \MakeUppercase#1}{\MakeUppercase#1}}%
+  \addcontentsline{toc}{section}{#1}%
+  \endgroup}
+\newcommand\bignotocpart[1]{%
+  \begingroup%
+  \ESKDsectAlign{section}{Center}%
+  \section*{#1%
+    \@mkboth{%
+      \MakeUppercase#1}{\MakeUppercase#1}}%
+  \endgroup}
+\newcommand\bignumberedpart[1]{%
+  \begingroup%
+  \ESKDsectAlign{section}{Center}%
+  \stepcounter{section}%
+  \section*{Розділ \arabic{section}}%
+  \vspace{-5mm}%
+  \section*{#1%
+    \@mkboth{%
+      \MakeUppercase#1}{\MakeUppercase#1}}%
+  \addcontentsline{toc}{section}{Розділ \arabic{section}. #1}%
+  \endgroup}
+\makeatother
+
+\newcommand{\vect}[1]{\mathbf{#1}}
+\DeclareMathOperator{\const}{const}
+\DeclareMathOperator{\proj}{\mathbf{proj}}
+\DeclareMathOperator{\rang}{\mathbf{rang}}
+\DeclareMathOperator{\opspan}{\mathbf{span}}
+\DeclareMathOperator{\opdim}{\mathbf{dim}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% theorem-like environments
+\theoremstyle{plain}
+\theorembodyfont{}
+\theoremseparator{.}
+\newtheorem{example}{Приклад}
+\newtheorem{theorem}{Теорема}
+
+\theoremstyle{nonumberplain}
+\theoremseparator{.}
+\theoremsymbol{\rule{1ex}{1ex}}
+\newtheorem{proof}{Доведення}
+
+\numberwithin{equation}{section}
+\numberwithin{theorem}{section}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+
+\makeatletter
+% \def\verbatim@font{\fontfamily{fcr}\fontsize{10pt}{11pt}\selectfont\@noligs}
+\makeatother
+
+% remove some hyperref warnings
+\makeatletter
+\providecommand*{\toclevel@theorem}{0}
+\providecommand*{\toclevel@proof}{0}
+\makeatother
+
+\newcommand\algorule{\rule{\textwidth}{0.5pt}}
+
+% inline program code
+\newcommand{\icode}[1]{\texttt{\small#1}}
+
+% zero-width space (allow breaking lines)
+\newcommand{\zwsp}{\hspace{0mm}}
+
+
+% to be done block
+\usepackage{color}
+\newcommand{\TBD}{{\color{red}To be done}}

@@ -1,0 +1,22 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{gost}[2009/05/25 0.1]
+
+\def\tablename{{\cyr\CYRT\cyra\cyrb\cyrl\cyri\cyrc\cyrya}}
+\def\figurename{{\cyr\CYRR\cyri\cyrs\cyru\cyrn\cyro\cyrk}}
+\def\refname{{\cyr\CYRP\cyre\cyrr\cyre\cyrl\cyrii\cyrk \cyrp\cyro\cyrs\cyri\cyrl\cyra\cyrn\cyrsftsn}}
+
+\renewcommand{\@biblabel}[1]{#1}
+
+\def\capfigure{figure}
+\def\captable{table}
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \ifx\@captype\capfigure
+      \centering #1~--~#2\par
+  \else
+%      #1~--~#2 \par
+      \hfill#1\par#2\par
+  \fi
+  \vskip\belowcaptionskip}
+\setlength\abovecaptionskip{2\p@}
+\setlength\belowcaptionskip{1\p@}

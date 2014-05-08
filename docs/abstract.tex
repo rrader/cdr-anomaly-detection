@@ -1,0 +1,51 @@
+% vim: nocindent:
+
+\documentclass[ukrainian,utf8,pointsubsection,simple]{eskdtext}
+\usepackage{pscyr}
+\usepackage[utf8]{inputenc}
+\usepackage[ukrainian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{indentfirst}
+\usepackage{lscape}
+\usepackage{paralist}
+\usepackage{gost}
+\usepackage{longtable}
+\usepackage[thmmarks,amsmath]{ntheorem}
+\usepackage[unicode]{hyperref}
+\usepackage[linesnumbered]{algorithm2e}
+
+\input{defs.tex}
+
+% Fit the abstract on a single page
+\ESKDsetPadding{7mm}{4mm}
+
+\newcommand{\abstracttile}[1]{%
+\begingroup%
+\centering\fontsize{18pt}{20pt}\selectfont\textbf{#1}\par%
+\endgroup}
+
+\begin{document}
+\thispagestyle{empty}
+\ESKDthisStyle{empty}
+\linespread{1.05}\selectfont
+\abstracttile{Анотація}
+У даній бакалаврській роботі розглянуті питання \TBD.
+
+Розроблена програма для \TBD.
+
+\abstracttile{Аннотация}
+В данной бакалаврской работе рассмотрен вопрос \TBD.
+
+Разработана программа для \TBD.
+
+\abstracttile{Abstract}
+In this work the problem of \TBD.
+
+The program \TBD.
+
+\end{document}
+
