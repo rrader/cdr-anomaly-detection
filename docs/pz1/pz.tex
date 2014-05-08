@@ -1,0 +1,86 @@
+\documentclass[russian,ukrainian,utf8,nostitching,floatsection,14pt]{eskdtext}
+
+% \usepackage{eskdchngsheet}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+% \geometry{left=3cm}
+%\usepackage{cyrtimes}
+\usepackage{pscyr}
+\usepackage{mathtext}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{listings}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{indentfirst}
+\usepackage{lscape}
+\usepackage{paralist}
+\usepackage{gost}
+\usepackage{longtable}
+\usepackage[thmmarks,amsmath]{ntheorem}
+\usepackage[unicode]{hyperref}
+\usepackage[linesnumbered]{algorithm2e}
+
+\usepackage{rotating}
+\usepackage{ulem}
+\usepackage{cancel}
+
+% \ESKDsectStyle{section}{\Large\bfseries}
+% \ESKDsectAlign{section}{Center}
+% \ESKDsectSkip{section}{10pt}{5pt}
+\renewcommand{\baselinestretch}{1.5} % Задаём единичный межстрочный интервал
+
+\input{defs.tex}
+% \newcommand{\docseparator}[1]{
+%   \newpage
+%   \thispagestyle{empty}
+%   \ESKDthisStyle{empty}
+%   \noindent\parbox[c][\vsize][c]{\hsize}
+%   {\centering\fontsize{36pt}{40pt}\selectfont#1}
+% 
+%   % reset all counters
+%   \setcounter{page}{0}
+%   \setcounter{section}{0}
+%   \setcounter{subsection}{0}
+%   \setcounter{subsubsection}{0}
+% }
+
+\ESKDsignature{IАЛЦ 467531.002 ПЗ}
+\ESKDauthor{Радер Р.І.}
+\ESKDchecker{Кулаков Ю.О.}
+\ESKDtitle{Система виявлення аномальної поведінки абонентів телефонної мережі}
+\ESKDdocName{Пояснювальна записка}
+\ESKDgroup{НТУУ "КПI" \\ група IО02}
+
+\renewcommand{\labelenumi}{\arabic{enumi}. }
+
+\begin{document}
+
+\lstset{
+numbers=none,
+basicstyle=\footnotesize,
+numberstyle=\tiny,
+tabsize=4,
+breaklines=true,
+title=\lstname
+}
+\docseparator{Пояснювальна\\записка}
+
+\newpage
+
+\tableofcontents
+\newpage
+\include{pz1/abbr}
+\include{pz1/intro}
+% \include{about}
+% \include{existing}
+% \include{algorithm}
+% \include{modeling}
+% \include{labour}
+% \include{after}
+\include{pz1/literature}
+% \include{howto}
+\end{document}

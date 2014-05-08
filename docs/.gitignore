@@ -4,3 +4,5 @@
 *.aux
 *.pdf
 *.out
+*.blg
+*.bbl
