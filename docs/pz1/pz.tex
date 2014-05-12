@@ -27,7 +27,8 @@
 \usepackage{rotating}
 \usepackage{ulem}
 \usepackage{cancel}
-
+%Чтобы ссылки автоматически не вставлялись под \path
+\def\BibUrl#1{#1} 
 % \ESKDsectStyle{section}{\Large\bfseries}
 % \ESKDsectAlign{section}{Center}
 % \ESKDsectSkip{section}{10pt}{5pt}
@@ -75,12 +76,12 @@ title=\lstname
 \newpage
 \include{pz1/abbr}
 \include{pz1/intro}
-% \include{about}
-% \include{existing}
-% \include{algorithm}
-% \include{modeling}
-% \include{labour}
-% \include{after}
+\include{pz1/about}
+\include{pz1/existing}
+\include{pz1/algorithm}
+\include{pz1/modeling}
+\include{labour/labour}
+\include{pz1/after}
 \include{pz1/literature}
-% \include{howto}
+\include{pz1/howto}
 \end{document}
