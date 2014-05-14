@@ -19,6 +19,10 @@ tz.pdf: tz/tz.tex $(lib_files)
 	pdflatex $<
 	pdflatex $<
 
+labour.pdf: labour/labour_main.tex labour/labour.tex
+	pdflatex $<
+	pdflatex $<
+
 all: abstract.pdf appendixtitles.pdf protocol.pdf
 
 clean:
