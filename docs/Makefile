@@ -20,6 +20,10 @@ tz.pdf: tz/tz.tex $(lib_files)
 	pdflatex $<
 
 labour.pdf: labour/labour_main.tex labour/labour.tex
+	-rm -f *.bbl
+	pdflatex $<
+	bibtex labour_main
+	pdflatex $<
 	pdflatex $<
 	pdflatex $<
 
