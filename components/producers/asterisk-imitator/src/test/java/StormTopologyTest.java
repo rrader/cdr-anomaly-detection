@@ -85,6 +85,25 @@ public class StormTopologyTest {
         cluster.shutdown();
     }
 
+    @org.junit.Test
+    public void testMassiveWithIntervention() throws Exception {
+        cleanTrend();
+
+        TopologyBuilder builder = new TopologyBuilder();
+        builder.setSpout("cdr", new AsteriskImitatorSpout(
+                GeneratorFabric.multiNumberMultiPatternBig()
+        ), 1);
+        builder.setBolt("process", new ProcessBolt(), 2).fieldsGrouping("cdr", new Fields("src"));
+
+        Config conf = new Config();
+
+        LocalCluster cluster = new LocalCluster();
+        cluster.submitTopology("test", conf, builder.createTopology());
+        Utils.sleep(60000*4);
+        cluster.killTopology("test");
+        cluster.shutdown();
+    }
+
     private static JedisPool redisPool = new JedisPool(new JedisPoolConfig(), "localhost");
     private void cleanTrend() {
         Jedis jedis = redisPool.getResource();

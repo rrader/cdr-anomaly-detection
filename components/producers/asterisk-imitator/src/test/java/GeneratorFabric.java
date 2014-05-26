@@ -1,7 +1,4 @@
-import ua.kpi.rrader.cdr.producers.strategy.MultiNumberMultiPattern;
-import ua.kpi.rrader.cdr.producers.strategy.MultiNumberOnePattern;
-import ua.kpi.rrader.cdr.producers.strategy.PatternCollectionGenerationStrategy;
-import ua.kpi.rrader.cdr.producers.strategy.SingleNumber;
+import ua.kpi.rrader.cdr.producers.strategy.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +18,15 @@ public class GeneratorFabric {
         numbers.add("+380009013948");
         numbers.add("+380009013949");
         return new MultiNumberOnePattern(numbers);
+    }
+
+    public static PatternCollectionGenerationStrategy multiNumberOneInterventionPattern() {
+        List<String> numbers = new ArrayList<String>();
+        numbers.add("+380009013946");
+        numbers.add("+380009013947");
+        numbers.add("+380009013948");
+        numbers.add("+380009013949");
+        return new MultiNumberOneInterventionPattern(numbers);
     }
 
     public static PatternCollectionGenerationStrategy multiNumberMultiPatternSmall() {
