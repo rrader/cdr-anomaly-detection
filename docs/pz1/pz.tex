@@ -31,7 +31,9 @@
 \def\BibUrl#1{#1} 
 % \ESKDsectStyle{section}{\Large\bfseries}
 % \ESKDsectAlign{section}{Center}
-% \ESKDsectSkip{section}{10pt}{5pt}
+\ESKDsectSkip{section}{5pt}{10pt}
+\ESKDsectSkip{subsection}{5pt}{5pt}
+\ESKDsectSkip{subsubsection}{0pt}{5pt}
 \renewcommand{\baselinestretch}{1.5} % Задаём единичный межстрочный интервал
 
 \input{defs.tex}
@@ -71,7 +73,7 @@ title=\lstname
 \tableofcontents
 \newpage
 \include{pz1/abbr}
-% \include{pz1/intro}
+\include{pz1/intro}
 \include{pz1/about}
 \include{pz1/existing}
 \include{pz1/algorithm}
