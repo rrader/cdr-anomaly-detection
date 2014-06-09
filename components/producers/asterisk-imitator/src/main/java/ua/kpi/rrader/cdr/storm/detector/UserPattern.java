@@ -118,8 +118,8 @@ public class UserPattern {
 
         double upper = 1.0;
         double lower = -1.0;
-        if (modifier > 0) upper += abs(modifier)/(1.96*sigma);
-        if (modifier < 0) lower -= abs(modifier)/(1.96*sigma);
+        if (modifier > 0) upper += abs(modifier);// /(1.96*sigma);
+        if (modifier < 0) lower -= abs(modifier); // /(1.96*sigma);
         monitoring.newMetricValue("deviation_limits", cdr.start,
                 upper + "," + lower, "1.0,-1.0");
         return deviation.getValue() < upper && deviation.getValue() > lower;

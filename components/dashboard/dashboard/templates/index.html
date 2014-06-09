@@ -85,7 +85,7 @@
 
 <h1>Поведение пользователей в реальном времени</h1>
 {% for phone,hist in hist.iteritems %}
-<div id="container{{phone}}" style="height: 400px"></div>
+<div id="container{{phone}}" style="height: 250px"></div>
 
 <script type="text/javascript">
         $(function () {
@@ -116,9 +116,9 @@
                         text: null
                     },
                     labels: {
-                        enabled: false
+                        enabled: true
                     },
-                    gridLineWidth: 0
+                    gridLineWidth: 1
                 },
 
                 tooltip: {
