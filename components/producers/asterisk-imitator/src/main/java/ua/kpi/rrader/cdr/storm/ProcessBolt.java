@@ -7,12 +7,14 @@ import backtype.storm.topology.base.BaseRichBolt;
 import backtype.storm.tuple.Tuple;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.storm.detector.UserPattern;
+import ua.kpi.rrader.cdr.storm.util.Monitoring;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProcessBolt extends BaseRichBolt {
     private OutputCollector collector;
+    private final Monitoring monitoring = new Monitoring();
     /**
      * Last processed time
      */
@@ -26,6 +28,7 @@ public class ProcessBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
+        long start = System.nanoTime();
         CDR cdr = fromTuple(tuple);
         UserPattern pattern = UserPattern.patternFor(cdr.src);
 
@@ -35,6 +38,8 @@ public class ProcessBolt extends BaseRichBolt {
             }
             pattern.maintain(cdr);
         }
+        long end = System.nanoTime();
+        monitoring.newMetricValue("process_time", cdr.start, String.valueOf((end - start) / 1000. / 1000. / 1000.), "0.015");
     }
 
     @Override

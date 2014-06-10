@@ -4,10 +4,11 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Monitoring {
+public class Monitoring implements Serializable {
     private static JedisPool redisPool = new JedisPool(new JedisPoolConfig(), "localhost");
     private Map<String, Integer> prevTime = new HashMap<String, Integer>();
 
@@ -36,7 +37,9 @@ public abstract class Monitoring {
         addValue(name, 24*7*4, hc, value);
     }
 
-    protected abstract String getKeySuffix();
+    protected String getKeySuffix() {
+        return "";
+    }
 
     private void addValue(String name, int limit, int hour, String value) {
         Jedis jedis = redisPool.getResource();

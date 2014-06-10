@@ -116,6 +116,7 @@ public class StormTopologyTest {
         for(String key: jedis.keys("hm_*")) {
             jedis.del(key);
         }
+        jedis.del("process_time");
         redisPool.returnResource(jedis);
     }
 }

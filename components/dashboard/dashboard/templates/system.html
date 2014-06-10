@@ -14,7 +14,7 @@
 
 {% block content %}
 
-<h1>Тренды</h1>
+<h1>Системные метрики</h1>
 {% for cluster,hist in hist.iteritems %}
 <div id="container{{cluster}}" style="height: 250px"></div>
 
@@ -25,7 +25,7 @@
 
             $('#container{{cluster}}').highcharts({
                 title: {
-                    text: "Cluster id: {{cluster}}"
+                    text: "Время обработки одной записи"
                 },
                 xAxis: {
                     title: {
@@ -36,7 +36,7 @@
                         enabled: false
                     },
                     lineWidth: 0,
-                    tickWidth: 0
+                    tickWidth: 0,
                 },
 
                 yAxis: {
@@ -47,7 +47,8 @@
                         enabled: true
                     },
                     gridLineWidth: 1,
-                    min: -1, max: 1
+                    min:0,
+                    max:0.1
                 },
 
                 tooltip: {
@@ -62,7 +63,7 @@
 
                 series: [{
                     id: 'valueLine',
-                    name: 'Trend',
+                    name: 'Time',
                     type: 'spline',
                     data: trend,
                     zIndex: 1,

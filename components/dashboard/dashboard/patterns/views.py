@@ -106,6 +106,15 @@ def trends(request):
         hist[key]["data"] = list_to_js(list(enumerate(reversed(r.lrange(cluster, 0, PERIOD-1)))))
     return render_to_response('trends.html', {"hist": hist})
 
+def system(request):
+    raw_patterns = read_raw_patterns()
+    hist = {}
+    for key in r.keys("process_time"):
+        # key = cluster.replace("clusterTrend:", "")
+        hist[key] = {}
+        hist[key]["data"] = list_to_js(list(enumerate(reversed(r.lrange(key, 0, PERIOD-1)))))
+    return render_to_response('system.html', {"hist": hist})
+
 
 def XX(request):
     return HttpResponse(json.dumps([[1, 522], [20, 312], [30, 762], [15, 24]]), content_type="application/json")
