@@ -1,5 +1,7 @@
 \documentclass[russian,ukrainian,utf8,floatsection,equationsingle,14pt,simple]{eskdtext}
 
+\usepackage{eskddstu}
+
 % \usepackage{eskdchngsheet}
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -39,6 +41,7 @@
 \renewcommand{\baselinestretch}{1.5} % Задаём единичный межстрочный интервал
 
 \input{defs.tex}
+\ESKDsignature{IАЛЦ 467531.003 ПЗ}
 % \newcommand{\docseparator}[1]{
 %   \newpage
 %   \thispagestyle{empty}
@@ -58,6 +61,8 @@
 \begin{document}
 
 \maketitleII
+
+\include{abstract/abstract}
 
 \lstset{
 numbers=none,

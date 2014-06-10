@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Панель управления{% endblock %}
+
+{% block custom_head %}
+
+<style type="text/css">
+.pattern {
+  width: 240px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<h1>Тренды</h1>
+{% for cluster,hist in hist.iteritems %}
+<div id="container{{cluster}}" style="height: 250px"></div>
+
+<script type="text/javascript">
+        $(function () {
+
+            var trend = {{hist.data | safe}};
+
+            $('#container{{cluster}}').highcharts({
+                title: {
+                    text: "Cluster id: {{cluster}}"
+                },
+                xAxis: {
+                    title: {
+                        text: null
+                    },
+                    type: 'linear',
+                    labels: {
+                        enabled: false
+                    },
+                    lineWidth: 0,
+                    tickWidth: 0
+                },
+
+                yAxis: {
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        enabled: true
+                    },
+                    gridLineWidth: 1,
+                    min: -1, max: 1
+                },
+
+                tooltip: {
+                    crosshairs: true,
+                    shared: true,
+                    valueSuffix: ''
+                },
+
+                legend: {
+                    enabled: true
+                },
+
+                series: [{
+                    id: 'valueLine',
+                    name: 'Trend',
+                    type: 'spline',
+                    data: trend,
+                    zIndex: 1,
+                    color: 'black',
+                    shadow: false,
+                    lineWidth: 0.5,
+                    marker: {
+                        fillColor: 'black',
+                        lineWidth: 1,
+                        radius: 2,
+                        lineColor: "white",
+                        enabled: true,
+                        symbol: 'circle'
+                    }
+                }
+                ]
+
+            });
+
+        });
+
+</script>
+{% endfor %}
+
+
+{% endblock %}

@@ -1,6 +1,6 @@
 lib_files := gost.sty defs.tex
 
-protocol_files := pz1/pz.tex pz1/about.tex pz1/abbr.tex pz1/intro.tex pz1/existing.tex labour/labour.tex pz1/after.tex pz1/literature.tex pz1/algorithm.tex pz1/modeling.tex
+protocol_files := pz1/pz.tex pz1/about.tex pz1/abbr.tex pz1/intro.tex pz1/existing.tex labour/labour.tex pz1/after.tex pz1/literature.tex pz1/algorithm.tex pz1/modeling.tex abstract/abstract.tex
 pz.pdf: $(protocol_files) $(lib_files) myrefs.bib 
 	-rm -f *.bbl
 	pdflatex $<
