@@ -8,7 +8,11 @@ import java.util.List;
  */
 public class GeneratorFabric {
     public static PatternCollectionGenerationStrategy oneNumber() {
-        return new SingleNumber("+380009013947");
+        return new SingleNumber("+380000000128");
+    }
+
+    public static PatternCollectionGenerationStrategy oneNumberWithIntervention() {
+        return new SingleNumberWithIntervention("+380000000128");
     }
 
     public static PatternCollectionGenerationStrategy multiNumberOnePattern() {
@@ -50,5 +54,31 @@ public class GeneratorFabric {
             numbers2.add("+3800000002" + i);
         }
         return new MultiNumberMultiPattern(numbers1, numbers2);
+    }
+
+    public static PatternCollectionGenerationStrategy multiNumberMultiPatternBigWithIntervention() {
+        List<String> numbers1 = new ArrayList<String>();
+        for (int i=10; i<60; i++) {  // 50 numbers
+            numbers1.add("+3800000001" + i);
+        }
+
+        List<String> numbers2 = new ArrayList<String>();
+        for (int i=10; i<60; i++) {  // 50 numbers
+            numbers2.add("+3800000002" + i);
+        }
+        return new MultiNumberMultiPatternWithOneIntervention(numbers1, numbers2);
+    }
+
+    public static PatternCollectionGenerationStrategy multiNumberMultiPatternBigWithClassIntervention() {
+        List<String> numbers1 = new ArrayList<String>();
+        for (int i=10; i<60; i++) {  // 50 numbers
+            numbers1.add("+3800000001" + i);
+        }
+
+        List<String> numbers2 = new ArrayList<String>();
+        for (int i=10; i<60; i++) {  // 50 numbers
+            numbers2.add("+3800000002" + i);
+        }
+        return new MultiNumberMultiPatternWithClassIntervention(numbers1, numbers2);
     }
 }

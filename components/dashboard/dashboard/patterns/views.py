@@ -30,7 +30,8 @@ def list_to_js_i(data):
         conv.append("[%s, %s, %s]" % (x, y[0], y[1]))
     return "[" + ",".join(conv) + "]"
 
-PERIOD = 7*24
+# PERIOD = 7*24
+PERIOD = 6*24
 
 def read_raw_patterns():
     raw_patterns = {}

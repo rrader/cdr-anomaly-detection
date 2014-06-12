@@ -44,7 +44,8 @@ public class AsteriskImitatorSpout extends BaseRichSpout {
     @Override
     public void nextTuple() {
         CDR record = generator.nextRecord();
-        collector.emit(record.toTuple());
+        if (record != null)
+            collector.emit(record.toTuple());
     }
 
     @Override

@@ -101,7 +101,7 @@ public class UserPattern {
             return null;
     }
 
-    public boolean isConform(CDR cdr) {
+    public boolean isConform(CDR cdr, boolean useTrend) {
         double patternFreq = patternFrequency(cdr.start);
         double sigma = patternSigma(cdr.start);
         double currentFreq = (60*60) / currentAvgPeriod.withNewFullValue(cdr.start);
@@ -118,8 +118,10 @@ public class UserPattern {
 
         double upper = 1.0;
         double lower = -1.0;
-        if (modifier > 0) upper += abs(modifier);// /(1.96*sigma);
-        if (modifier < 0) lower -= abs(modifier); // /(1.96*sigma);
+        if (useTrend) {
+            if (modifier > 0) upper += abs(modifier);// /(1.96*sigma);
+            if (modifier < 0) lower -= abs(modifier); // /(1.96*sigma);
+        }
         monitoring.newMetricValue("deviation_limits", cdr.start,
                 upper + "," + lower, "1.0,-1.0");
         return deviation.getValue() < upper && deviation.getValue() > lower;

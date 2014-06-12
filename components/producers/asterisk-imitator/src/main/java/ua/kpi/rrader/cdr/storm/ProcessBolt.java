@@ -4,6 +4,7 @@ import backtype.storm.task.OutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.topology.base.BaseRichBolt;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import ua.kpi.rrader.cdr.source.CDR;
 import ua.kpi.rrader.cdr.storm.detector.UserPattern;
@@ -13,6 +14,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProcessBolt extends BaseRichBolt {
+    private boolean useTrend;
+
+    public ProcessBolt(boolean useTrend) {
+        this.useTrend = useTrend;
+    }
+
     private OutputCollector collector;
     private final Monitoring monitoring = new Monitoring();
     /**
@@ -33,8 +40,8 @@ public class ProcessBolt extends BaseRichBolt {
         UserPattern pattern = UserPattern.patternFor(cdr.src);
 
         if (pattern != null && pattern.isConverged()) { // is converged? 4 weeks;dispersion
-            if (!pattern.isConform(cdr))  {
-                //TODO: alarm
+            if (!pattern.isConform(cdr, useTrend))  {
+                collector.emit(tuple.getValues());
             }
             pattern.maintain(cdr);
         }
@@ -43,7 +50,10 @@ public class ProcessBolt extends BaseRichBolt {
     }
 
     @Override
-    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) { }
+    public void declareOutputFields(OutputFieldsDeclarer outputFieldsDeclarer) {
+        outputFieldsDeclarer.declare(new Fields("src", "dst", "start", "answer", "end",
+                "duration", "billsec", "disposition"));
+    }
 
     public static CDR fromTuple(Tuple t) {
         CDR cdr = new CDR();

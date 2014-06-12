@@ -23,7 +23,7 @@ public class PrintBolt extends BaseRichBolt {
 
     @Override
     public void execute(Tuple tuple) {
-        System.out.println(Arrays.toString(tuple.getValues().toArray()));
+        System.out.println("Intervention!: " + Arrays.toString(tuple.getValues().toArray()));
     }
 
     @Override

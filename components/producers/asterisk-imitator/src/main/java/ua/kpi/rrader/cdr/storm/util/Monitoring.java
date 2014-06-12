@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Monitoring implements Serializable {
     private static JedisPool redisPool = new JedisPool(new JedisPoolConfig(), "localhost");
-    private Map<String, Integer> prevTime = new HashMap<String, Integer>();
+//    private static Map<String, Integer> prevTime = new HashMap<String, Integer>();
 
     public void newValueFrequency(int time, double value) {
         newMetricValue("frequency", time, String.valueOf(value));
@@ -21,19 +21,24 @@ public class Monitoring implements Serializable {
     }
 
     public void newMetricValue(String name, int time, String value, String defaultValue) {
+        Jedis jedis = redisPool.getResource();
         int hc = time / (60*60);
         String h_key = "hm_" + name + getKeySuffix();
-        if (prevTime.get(h_key) != null) {
-            int hp = prevTime.get(h_key) / (60*60);
+        String h_key_data = jedis.get(h_key);
+        redisPool.returnResource(jedis);
+        if (h_key_data != null) {
+            int hp = Integer.valueOf(h_key_data) / (60*60);
 
-            if (hp == hc) return;
+            if (hp >= hc) return;
 
             if (hc - hp > 1) {
                 for (int i=hp+1; i<hc; i++)
                     addValue(name, i, 24*7*4, defaultValue);
             }
         }
-        prevTime.put(h_key, time);
+        jedis = redisPool.getResource();
+        jedis.set(h_key, String.valueOf(time));
+        redisPool.returnResource(jedis);
         addValue(name, 24*7*4, hc, value);
     }
 

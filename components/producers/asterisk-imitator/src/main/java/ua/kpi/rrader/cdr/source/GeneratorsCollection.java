@@ -11,6 +11,7 @@ import java.util.List;
  */
 public abstract class GeneratorsCollection<T extends CallGenerator> extends ArrayList<T> implements CallGenerator {
     private List<Integer> times = new LinkedList<Integer>();
+    private Long endTime = null;
 
     @Override
     public void setNextEventTime(int startTime) {
@@ -33,6 +34,10 @@ public abstract class GeneratorsCollection<T extends CallGenerator> extends Arra
         CDR cdr = nearestEvent.nextRecord();
 
         times.set(id, nextTime(nearestEvent));
+
+        if (getEndTime() != null && cdr.start > getEndTime())
+            return null;
+
         return cdr;
     }
 
@@ -63,4 +68,12 @@ public abstract class GeneratorsCollection<T extends CallGenerator> extends Arra
     }
 
     protected abstract int nextTime(T callGenerator);
+
+    public Long getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Long endTime) {
+        this.endTime = endTime;
+    }
 }
