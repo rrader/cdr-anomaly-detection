@@ -12,6 +12,9 @@ pz.pdf: $(protocol_files) $(lib_files) myrefs.bib
 abstract.pdf: abstract/abstract.tex $(lib_files)
 	pdflatex $<
 
+albumlist.pdf: albumlist.tex $(lib_files)
+	pdflatex $<
+
 appendixtitles.pdf: appendixtitles/appendixtitles.tex $(lib_files)
 	pdflatex $<
 

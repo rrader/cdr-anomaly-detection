@@ -60,7 +60,7 @@
 
 \begin{figure}[h!]
         \begin{center}
-            \includegraphics[scale=0.15]{resources/poc-time.png}
+            \includegraphics[scale=0.13]{resources/poc-time.png}
         \end{center}
         \caption{Час обробки записів у прототипі системи}
         \label{fig:model_poc_time}
@@ -100,6 +100,34 @@
         \label{fig:model_prod_time}
 \end{figure}
 
+\subsection{Робота системи в реальному часі}
+
+Дана система може працювати в режимі реального часу, тому що модифікований алгоритм дає константний час обробки одного запису.
+
+Як було зазначено, в даному способі місцем, що обмежує паралелизм є точка підрахунку тренду, в якій потрібно обмінюватись поточними частотами із всіма нодами через загальну пам'ять. В реалізованій системі роль загальної пам'яті грає мережеве сховище Redis типу ключ-значення. Враховуючи спосіб підрахунку тренду, запис поточної частоти в сховище можна робити кожну кратну кількість опрацьованих записів, таким чином обмежуючи канал з базою даних. Сховище Redis легко маштабується на читання, тому враховуючи вищесказане, алгоритм може маштабуватися лінійно.
+
+На комп'ютері, на якому проводилося моделювання це значення приблизно дорівнює $T_1 = 0.01$ с. В виробничій системі це значення буде меншим, тому що нода, яка відповідає за підрахунки буди окремим комп'ютером, не суміщеним із імітатором абонентів, але збільшиться час на передачу даних по мережі. Така система здатна обробляти до $6000$ записів за хвилину, або $100$ за секунду.
+
+За офіційними результатами досліджень швидкості роботи черги Apache Kafka, вона може передавати у систему до $50$ МБ/с, що складає $250000$ повідомлень в секунду на один брокер, за умови що одне повідомлення складає $200$ байт. За офіційними результатами досліджень швидкості роботи Apache Storm, він може обробляти до $1000000$ записів в секунду на одній ноді. Виходячи з цього, Kafka є більш повільною системою, тому що працює із диском та реплікує дані для відмовостійкості.
+
+\begin{table}[h]
+    \caption{Кількість оброблених записів в секунду в залежності від швидкості обробки на одному вузлі та кількості вузлів}
+    \begin{tabularx}{\textwidth}{| X | X | X | X | X | X |}
+        \hline
+        $T_1$  & 1     & 2    & 5     & 10    & 50     \\ \hline
+        0.01   & 100   & 200  & 500   & 1000  & 5000 \\ \hline
+        0.005  & 200   & 400  & 1000  & 2000  & 10000 \\ \hline
+        0.001  & 1000  & 2000 & 5000  & 10000 & 50000 \\ \hline
+        0.0005 & 2000  & 4000 & 10000 & 20000 & 100000 \\ \hline
+        0.0001 & 10000 & 20000 & 50000 & 100000 & 500000 \\ \hline
+    \end{tabularx}
+    \label{tab:realtime-calculate}
+\end{table}
+
+Отже, згідно з розрахунками \autoref{tab:realtime-calculate} для досягнення теоретичного максимуму в 250000 повідомлень в секунду на одному брокері, потрібно мати кластер Storm, що складається із 25 вузлів та може обробляти один запис за $T_1 = 0.0001$ c, або 50 вузлів та швидкістю в $T_1 = 0.0002$. Пропускна здатність кластеру такого розміру при $T_1 = 0.01$ буде $N=\frac{1}{0.01} \cdot 50 = 5000$ записів CDR в секунду.
+
+Пропускна здатність мережі в випадку з теоретичним максимумом має складати $M = 50 \cdot 8 = 400$ Мбіт без сигнального трафіку, що можна забеспечити із мережею швидкістю в 1 Гбіт.
+
 \subsection{Моделювання за відсутності інтервенцій}
 
 Після моделювання 100 абонентів, по 50 абонентів на один шаблон поведінки, отримані такі дані. На \autoref{fig:model_prod_3} зображено графік аналізу одного із абонентів мережі. Як видно з графіку, реальне використання абонентом мережі (суцільна лінія) близька до розрахованого шаблону поведінки (пунктирна лінія), та лежить в межах довірчого інтервалу 95\% (сіра зона на графіку).
@@ -132,13 +160,130 @@
         \label{fig:model_prod_5}
 \end{figure}
 
-% график времени обработки (должна быть константа), типа круто же
+\subsection{Моделювання інтервенції в роботу одного абонента без урахування тренду}
 
-\subsection{Результати моделювання для алгоритму без урахування тренду}
-    \TBD
-\subsection{Результати моделювання для алгоритму з урахуванням тренду}
-    \TBD
-% \newpage
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithoutTrend/analysis.png}
+        \end{center}
+        \caption{Графік аналізу роботи абоненту, який змінює поведінку}
+        \label{fig:model_oneIntervWithoutTrend_analysis_int}
+\end{figure}
+На \autoref{fig:model_oneIntervWithoutTrend_analysis_int} та \autoref{fig:model_oneIntervWithoutTrend_dev_int} зображено графіки використання мережі та відхилень від шаблонної поведінки. Як видно з першого графіку, зміна поведінки є виходом частоти використання мережі за довірчі інтервали. З другого графіку видно, що система успішно визначила аномалії.
+
+В даному випадку групових змін в поведінці не було, та розрахунок та врахування тренду (врахування групових змін в поведінці) було відімкнуто.
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithoutTrend/dev.png}
+        \end{center}
+        \caption{Графік відхилення від шаблону абоненту, який змінює поведінку}
+        \label{fig:model_oneIntervWithoutTrend_dev_int}
+\end{figure}
+
+\label{oneIntervWithoutTrend}
+
+\subsection{Моделювання інтервенції в роботу одного абонента з урахуванням тренду}
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithTrend/analysis-int.png}
+        \end{center}
+        \caption{Графік аналізу роботи абоненту, який змінює поведінку}
+        \label{fig:model_oneIntervWithTrend_analysis_int}
+\end{figure}
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithTrend/analysis-ok.png}
+        \end{center}
+        \caption{Графік аналізу роботи абоненту, який не змінює поведінку}
+        \label{fig:model_oneIntervWithTrend_analysis_ok}
+\end{figure}
+На \autoref{fig:model_oneIntervWithTrend_analysis_int} та \autoref{fig:model_oneIntervWithTrend_analysis_ok} зображено графіки використання мережі двох абонентів, один змінює поведінку, другий - ні відповідно. Зміну поведінки видно із виходу рівня використання мережі за довірчі інтервали на першому графіку.
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithTrend/dev-int.png}
+        \end{center}
+        \caption{Графік відхилення від шаблону абоненту, який змінює поведінку}
+        \label{fig:model_oneIntervWithTrend_dev_int}
+\end{figure}
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithTrend/dev-ok.png}
+        \end{center}
+        \caption{Графік відхилення від шаблону абоненту, який не змінює поведінку}
+        \label{fig:model_oneIntervWithTrend_dev_ok}
+\end{figure}
+
+З \autoref{fig:model_oneIntervWithTrend_dev_int} видно, що система успішно виявила інтервенцію (відхилення від нормальної поведінки вийшло за довірчий інтервал). При цьому, ця зміна не впливає аналіз поведінки інших користувачів через тренд (\autoref{fig:model_oneIntervWithTrend_dev_ok}).
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/oneIntervWithTrend/trend.png}
+        \end{center}
+        \caption{Графіки трендів для двох класів абонентів}
+        \label{fig:model_oneIntervWithTrend_trend}
+\end{figure}
+
+В даному випадку групових змін в поведінці не було, але розрахунок та врахування тренду (врахування групових змін в поведінці) було ввімкнено.
+
+Співставляючи результати моделювання без урахування тренду (розділ \ref{oneIntervWithoutTrend}) та з урахуванням тренду, бачимо що врахування групової поведінки не заважає виявленню одиночних інтервенцій. Зміна роботи одного з користувачів не впливає на загальний тренд всього кластеру (\autoref{fig:model_oneIntervWithTrend_trend}).
+
+\subsection{Моделювання інтервенції у клас абонентів без урахування тренду}
+\label{classWithoutTrend}
+В даному випадку зміна шаблону використання системи відбулася одночасно у цілого класу користувачів. Врахування групової поведінки (тренду) відімкнено.
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/classIntervWithoutTrend/analysis.png}
+        \end{center}
+        \caption{Графік аналізу роботи одного з абонентів, що змінили поведінку}
+        \label{fig:model_classIntervWithoutTrend_analytics}
+\end{figure}
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/classIntervWithoutTrend/dev.png}
+        \end{center}
+        \caption{Графік відхилення від шаблону одного з абонентів, що змінили поведінку}
+        \label{fig:model_classIntervWithoutTrend_dev}
+\end{figure}
+
+На \ref{fig:model_classIntervWithoutTrend_analytics} та \ref{fig:model_classIntervWithoutTrend_dev} видно, що система помилково визначила поведінку як аномальну, хоча зміна пройшла у всіх абонентів. Таким чином, оператори могли отримати велику кількість хибнопозитивних повідомлень про вторгнення.
+
+\subsection{Моделювання інтервенції у клас абонентів з урахуванням тренду}
+
+В даному випадку зміна шаблону використання системи відбулася одночасно у цілого класу користувачів. Врахування групової поведінки (тренду) ввімкнено.
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/classIntervWithTrend/analysis.png}
+        \end{center}
+        \caption{Графік аналізу роботи одного з абонентів, що змінили поведінку}
+        \label{fig:model_classIntervWithTrend_analytics}
+\end{figure}
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/classIntervWithTrend/dev.png}
+        \end{center}
+        \caption{Графік відхилення від шаблону одного з абонентів, що змінили поведінку}
+        \label{fig:model_classIntervWithTrend_dev}
+\end{figure}
+
+Як видно з \autoref{fig:model_classIntervWithTrend_analytics} та \autoref{fig:model_classIntervWithTrend_dev}, на відміну від з моделюванням з відімкненим врахуванням групової поведінки (розділ \ref{classWithoutTrend}), поведінка користувачів з групи, що змінила поведінку не була відмічена як аномальне, що каже про правильну роботу алгоритму, який враховує тренд (\autoref{fig:model_classIntervWithTrend_trend}) - характер зміни поведінки групи користувачів.
+
+\begin{figure}[h!]
+        \begin{center}
+            \includegraphics[scale=0.55]{resources/classIntervWithTrend/trend.png}
+        \end{center}
+        \caption{Графіки трендів для двох класів абонентів}
+        \label{fig:model_classIntervWithTrend_trend}
+\end{figure}
+
+\clearpage
 \subsection*{Висновки до розділу 3}
 \addcontentsline{toc}{subsection}{Висновки до розділу 3}
 
